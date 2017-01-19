@@ -1,3 +1,4 @@
+#sup dog
 #Jesse Wynn
 #ECEN 631 Robotic Vision
 #Assignment 1
