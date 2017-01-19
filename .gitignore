@@ -1,0 +1,7 @@
+# .gitignore file for robotic vision repo
+
+*.autosave
+*.user
+*.avi
+*.pdf
+
