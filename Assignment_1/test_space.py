@@ -1,7 +1,6 @@
-#sup dog
 #Jesse Wynn
 #ECEN 631 Robotic Vision
-#Assignment 1
+#Assignment 1 Task 2
 import cv2
 import numpy as np
 
