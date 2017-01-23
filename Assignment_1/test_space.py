@@ -10,6 +10,7 @@ detector = cv2.SimpleBlobDetector()
 
 # Detect blobs.
 keypoints = detector.detect(im)
+#print keypoints
 
 # Draw detected blobs as red circles.
 # cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS ensures the size of the circle corresponds to the size of blob

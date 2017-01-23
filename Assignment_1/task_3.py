@@ -2,8 +2,22 @@ import cv2
 import glob
 import numpy as np
 
+#create blob detector parameter object
+params = cv2.SimpleBlobDetector_Params()
+#filter by size
+params.filterByArea = True
+params.minArea = 50
+params.maxArea = 2500
+#filter by circularity
+params.filterByCircularity = True
+params.minCircularity = 0.8
+params.maxCircularity = 1.0
+#create blob detector with params object
+blob_detect = cv2.SimpleBlobDetector(params)
+
 number = 1
 first_image = cv2.imread('1.jpg',0)
+
 while number <= 36:
     num = str(number)
     filename = num + '.jpg'
@@ -12,21 +26,11 @@ while number <= 36:
     #absolute difference it first
     abs_diff = cv2.absdiff(img,first_image)
     #then threshold it
-    ret, img = cv2.threshold(abs_diff,13,255, cv2.THRESH_BINARY)
+    ret, img = cv2.threshold(abs_diff,11,255, cv2.THRESH_BINARY)
     #then use simple blob detector with size and circularity
-    #blob detector parameters
-    params = cv2.SimpleBlobDetector_Params()
-    #filter by size
-    params.filterByArea = True
-    params.minArea = 50
-    params.maxArea = 100000
-    #filter by circularity
-    params.filterByCircularity = True
-    params.minCircularity = 0.9
-    params.maxCircularity = 1
-    #create blob detector with params
-    blob_detect = cv2.SimpleBlobDetector(params)
+
     keypoints = blob_detect.detect(img)
+    #print keypoints
     #draw keypoints
     img_w_keypoints = cv2.drawKeypoints(img,keypoints,np.array([]),(0,0,255))
     #then draw the keypoints returned by simple blob detector
