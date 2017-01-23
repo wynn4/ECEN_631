@@ -3,12 +3,16 @@ import glob
 import numpy as np
 
 number = 1
+first_image = cv2.imread('1.jpg',0)
 while number <= 36:
     num = str(number)
     filename = num + '.jpg'
     img = cv2.imread(filename,0)
-    #difference it first
+
+    #absolute difference it first
+    abs_diff = cv2.absdiff(img,first_image)
     #then threshold it
+    ret, img = cv2.threshold(abs_diff,13,255, cv2.THRESH_BINARY)
     #then use simple blob detector with size and circularity
     #then draw the keypoints returned by simple blob detector
     #then draw the keypoints on the original frame
