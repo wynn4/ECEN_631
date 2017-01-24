@@ -6,11 +6,10 @@ import numpy as np
 params = cv2.SimpleBlobDetector_Params()
 #filter by size
 params.filterByArea = True
-params.minArea = 50
-params.maxArea = 2500
+params.minArea = 100
 #filter by circularity
 params.filterByCircularity = True
-params.minCircularity = 0.8
+params.minCircularity = 0.1
 params.maxCircularity = 1.0
 #create blob detector with params object
 blob_detect = cv2.SimpleBlobDetector(params)
@@ -30,7 +29,7 @@ while number <= 36:
     #then use simple blob detector with size and circularity
 
     keypoints = blob_detect.detect(img)
-    #print keypoints
+    print keypoints
     #draw keypoints
     img_w_keypoints = cv2.drawKeypoints(img,keypoints,np.array([]),(0,0,255))
     #then draw the keypoints returned by simple blob detector
