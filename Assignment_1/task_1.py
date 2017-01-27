@@ -3,7 +3,7 @@ import cv2
 refPt = []
 def click_and_print_pixel_data(event, x, y, flags, param):
     global refPt
-    if event == cv2.EVENT_LBUTTONDOWN:
+    if event == cv2.EVENT_MOUSEMOVE:
         refPt = [(x,y)]
         print refPt
 #create a capture object
