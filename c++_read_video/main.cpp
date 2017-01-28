@@ -13,15 +13,16 @@ int main()
     cv::Mat blur_frame;
     cv::Mat thresh_frame;
 
-    int esc_key = 1048603;
+    //int esc_key = 1048603;  //desktop
+    int esc_key = 27;       //laptop
 
     while(true)
     {
         cap >> frame;
-        cv::cvtColor(frame, gray_frame, 6); //COLOR_BGR2GRAY == 6
-        cv::GaussianBlur(gray_frame,blur_frame, cv::Size(7,7), 1.5, 1.5);
-        cv::threshold(blur_frame,thresh_frame,100,255,0);
-        cv::imshow("image", thresh_frame);
+        //cv::cvtColor(frame, gray_frame, 6); //COLOR_BGR2GRAY == 6
+        //cv::GaussianBlur(gray_frame,blur_frame, cv::Size(7,7), 1.5, 1.5);
+        //cv::threshold(blur_frame,thresh_frame,100,255,0);
+        cv::imshow("image", frame);
         if(cv::waitKey(30) == esc_key)
             break;
     }
