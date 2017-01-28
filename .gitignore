@@ -1,7 +1,7 @@
 # .gitignore file for robotic vision repo
 
 #don't include build directories
-build/*
+build*
 *.autosave
 *.user
 *.avi
