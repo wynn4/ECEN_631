@@ -38,20 +38,35 @@ int main()
     cv::cvtColor(image, image_gray, 6); //convert to grayscale (COLOR_BGR2GRAY == 6)
     cv::GaussianBlur(image_gray, image_blur, cv::Size(7,7), 1.5, 1.5);  //apply blur to reduce noise
     cv::threshold(image_blur, image_threshold, 100, 255, 0);
-    cv::putText(image_threshold, "Cookie!", cvPoint(175,100),5, 2.5, cvScalar(200,200,250), 1, CV_AA); //FONT_HERSHEY_COMPLEX_SMALL ==5
 
+
+    //ADD TOP AND BOTTOM ROI
     //cv::rectangle(image_threshold,cv::Point(150,480), cv::Point(520,400),255,0.5,0);
     //cv::rectangle(image_threshold,cv::Point(150,0), cv::Point(520,80),255,0.5,0);
+    //cv::rectangle(image_threshold,cv::Point(150,80),cv::Point(520,400),255,0.5,0);
     cv::Rect bottomROI(cv::Point(150,480), cv::Point(520, 400));
     cv::Rect topROI(cv::Point(150,0), cv::Point(520,80));
+    cv::Rect detectionROI(cv::Point(150,80),cv::Point(520,400));
+
 
     int bottomArea = cv::countNonZero(image_threshold(bottomROI));
     int topArea = cv::countNonZero(image_threshold(topROI));
     std::cout << bottomArea << ", " << topArea << std::endl;
 
+    //BLOB detect
+    cv::SimpleBlobDetector detector;
+    std::vector<cv::KeyPoint> keypoints;
+    detector.detect(image_threshold, keypoints);
 
+    cv::Mat image_w_keypoints;
 
-    cv::imshow("cookie", image_threshold);
+    cv::drawKeypoints(image_threshold, keypoints, image_w_keypoints, cv::Scalar(0,0,255), cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
+
+    //add the text
+    cv::putText(image_w_keypoints, "Cookie!", cvPoint(175,150),2, 2.5, cvScalar(255), 1, CV_AA); //FONT_HERSHEY_DUPLEX == 2
+
+    //show the image
+    cv::imshow("cookie", image_w_keypoints);
     cv::waitKey(0);
 
     return 0;
