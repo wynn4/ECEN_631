@@ -38,6 +38,7 @@ int main()
     cv::cvtColor(image, image_gray, 6); //convert to grayscale (COLOR_BGR2GRAY == 6)
     cv::GaussianBlur(image_gray, image_blur, cv::Size(7,7), 1.5, 1.5);  //apply blur to reduce noise
     cv::threshold(image_blur, image_threshold, 100, 255, 0);
+    cv::putText(image_threshold, "Cookie!", cvPoint(175,100),5, 2.5, cvScalar(200,200,250), 1, CV_AA); //FONT_HERSHEY_COMPLEX_SMALL ==5
 
 
 
