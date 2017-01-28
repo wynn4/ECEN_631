@@ -3,14 +3,14 @@ import cv2
 refPt = []
 def click_and_print_pixel_data(event, x, y, flags, param):
     global refPt
-    if event == cv2.EVENT_MOUSEMOVE:
+    if event == cv2.EVENT_LBUTTONDOWN:
         refPt = [(x,y)]
         print refPt
 #create a capture object
 #0 for video device 0
 cv2.namedWindow('image')
 cv2.setMouseCallback('image', click_and_print_pixel_data)
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture(1)
 
 while(True):
     #capture frame-by-frame
