@@ -40,6 +40,15 @@ int main()
     cv::threshold(image_blur, image_threshold, 100, 255, 0);
     cv::putText(image_threshold, "Cookie!", cvPoint(175,100),5, 2.5, cvScalar(200,200,250), 1, CV_AA); //FONT_HERSHEY_COMPLEX_SMALL ==5
 
+    //cv::rectangle(image_threshold,cv::Point(150,480), cv::Point(520,400),255,0.5,0);
+    //cv::rectangle(image_threshold,cv::Point(150,0), cv::Point(520,80),255,0.5,0);
+    cv::Rect bottomROI(cv::Point(150,480), cv::Point(520, 400));
+    cv::Rect topROI(cv::Point(150,0), cv::Point(520,80));
+
+    int bottomArea = cv::countNonZero(image_threshold(bottomROI));
+    int topArea = cv::countNonZero(image_threshold(topROI));
+    std::cout << bottomArea << ", " << topArea << std::endl;
+
 
 
     cv::imshow("cookie", image_threshold);
