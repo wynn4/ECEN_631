@@ -1,1 +1,0 @@
-/home/jesse/Desktop/ECEN_631/build-c++_read_video-Desktop_Qt_5_7_0_GCC_64bit-Default/CMakeFiles/c++_read_video.dir
