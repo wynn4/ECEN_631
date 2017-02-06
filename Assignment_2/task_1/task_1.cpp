@@ -30,7 +30,7 @@ int main()
     //Convert_to_Grayscale
     cv::cvtColor(image, image_gray, 6); //convert to grayscale (COLOR_BGR2GRAY == 6)
 
-    //find Chessboard corners
+    //Find Chessboard corners
     bool corners_found = cv::findChessboardCorners(image_gray,board_size,corners,1 + 2);
 
     if(corners_found)
