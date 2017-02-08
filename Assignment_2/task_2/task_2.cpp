@@ -97,14 +97,13 @@ int main()
             {
                 std::cout << "Board size and corner size mismatch (all corners may not have been detected).";
             }
+        //Push the ObjPts vector onto the objectPoints vector
+        objectPoints.push_back(ObjPts);
         }
         else
         {
             std::cout << "Corners not found" << std::endl;
         }
-
-        //Push the ObjPts vector onto the objectPoints vector
-        objectPoints.push_back(ObjPts);
 
         //show the image
         cv::imshow("Chess Board", image_color);
@@ -124,7 +123,7 @@ int main()
     //calibrate using calibrateCamera function
     cv::calibrateCamera(objectPoints,imagePoints,imageSize,Intrinsic_Matrix,Distortion_Coefficients,rvecs,tvecs);
 
-    //Write Calibration Intrinsic and Distortion parameters to file
+    //Write Calibration Intrinsic and Distortion parameters to .txt file
 
     std::string filename = "task_2_camera_parameters.txt";
     std::FILE* file;
@@ -147,6 +146,17 @@ int main()
         std::fprintf(file,"\n");
     }
     std::fclose(file);
+
+    //Write Calibration Intrinsic and Distortion parameters to .xml file (this is the preferred method)
+    cv::FileStorage fs("camera_calibration_parameters.xml", cv::FileStorage::WRITE);
+    fs << "Camera_Matrix" << Intrinsic_Matrix;
+    fs << "Distortion_Coefficients" << Distortion_Coefficients;
+
+    //If we were to read this file it would look like:
+    //cv::FileStorage fs("camera_calibration_parameters.xml", cv::FileStorage::READ);
+    //fs["Camera_Matrix"] >> Intrinsic_Matrix;
+    //fs["Distortion_Coefficients"] >> Distortion_Coefficients;
+
 
     return 0;
 }
