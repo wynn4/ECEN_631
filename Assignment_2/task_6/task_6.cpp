@@ -114,9 +114,12 @@ int main()
     cv::absdiff(Third_gray,Third_undist,Third_diff);
 
     //Display the images
-    cv::imshow("First Image Difference",First_gray);
-    cv::imshow("Second Image Difference",First_undist);
+    cv::imshow("First Image Difference",First_diff);
+    cv::imshow("Second Image Difference",Second_diff);
     cv::imshow("Third Image Difference",Third_diff);
+
+    //cv::imwrite("/home/jesse/Desktop/ECEN_631/Assignment_2/task_6/first_diff.jpg",First_diff);
+
     cv::waitKey(0);
 
     return 0;

@@ -111,6 +111,11 @@ int main()
     cv::imshow("Far Difference",Far_diff);
     cv::imshow("Close Difference",Close_diff);
     cv::imshow("Turned Difference",Turned_diff);
+
+    //cv::imwrite("/home/jesse/Desktop/ECEN_631/Assignment_2/task_3/far_diff.jpg",Far_diff);
+    //cv::imwrite("/home/jesse/Desktop/ECEN_631/Assignment_2/task_3/close_diff.jpg",Close_diff);
+    //cv::imwrite("/home/jesse/Desktop/ECEN_631/Assignment_2/task_3/turned_diff.jpg",Turned_diff);
+
     cv::waitKey(0);
 
     return 0;

@@ -46,6 +46,7 @@ int main()
 
     //show the image
     cv::imshow(window_name, image_color);
+    //cv::imwrite("/home/jesse/Desktop/ECEN_631/Assignment_2/task_1/task_1_image.bmp",image_color);
     cv::waitKey(0);
 
     return 0;
