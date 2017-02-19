@@ -3,6 +3,8 @@
 #don't include build directories
 build*
 jesse*
+Test*
+test*
 *.autosave
 *.user
 *.avi
