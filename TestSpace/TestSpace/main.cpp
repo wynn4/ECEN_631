@@ -1,8 +1,17 @@
-#include <QCoreApplication>
+#include <iostream>
 
-int main(int argc, char *argv[])
+int main()
 {
-    QCoreApplication a(argc, argv);
+    float square_size = 3.88;
+    int y;
+    float length;
 
-    return a.exec();
+    for(int i=0;i<10;i++)
+    {
+        y = i;
+        length = y*square_size;
+        std::cout << length << std::endl;
+    }
+
+    return 0;
 }
