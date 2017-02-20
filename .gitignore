@@ -11,3 +11,8 @@ test*
 *.pdf
 *.gz
 *.zip
+
+#don't include document files
+*.odt
+*.doc
+*.docx
