@@ -5,18 +5,19 @@
 #include <opencv2/video/video.hpp>
 #include <opencv2/highgui/highgui.hpp>
 
-//function prototype
-void drawEpipolarLines(cv::Mat image, std::vector<cv::Point3f> epipolarLines, cv::Scalar color);
 
 int main()
 {
-    //initialize cameraMatrixL, cameraMatrixR, distCoeffsL, and distCoeffsR
+    //initialize cameraMatrixL, cameraMatrixR, distCoeffsL,distCoeffsR, Rotattion,Translation,FundamentalMatrix
     cv::Mat cameraMatrixL(3,3, CV_64F);
     cv::Mat cameraMatrixR(3,3, CV_64F);
     cv::Mat distCoeffsL(5,1,CV_64F);
     cv::Mat distCoeffsR(5,1,CV_64F);
+    cv::Mat stereoRotation(3,3, CV_64F);
+    cv::Mat stereoTranslation(3,1,CV_64F);
+    cv::Mat F;
 
-    //Read the individual camera calibration parameters from file
+    //read the individual camera calibration parameters from file
     cv::FileStorage fs1("/home/jesse/Desktop/ECEN_631/Assignment_3/build-task_1-Desktop_Qt_5_7_0_GCC_64bit-Default/camera_L_parameters.xml", cv::FileStorage::READ);
     fs1["Camera_Matrix"] >> cameraMatrixL;
     fs1["Distortion_Coefficients"] >> distCoeffsL;
@@ -25,89 +26,106 @@ int main()
     fs2["Camera_Matrix"] >> cameraMatrixR;
     fs2["Distortion_Coefficients"] >> distCoeffsR;
 
+    //read in the fundamental matrix from stereo calibration as well as Rotation and Translation
+    cv::FileStorage fs3("/home/jesse/Desktop/ECEN_631/Assignment_3/build-task_2-Desktop_Qt_5_7_0_GCC_64bit-Default/stereo_calibration_parameters.xml", cv::FileStorage::READ);
+    fs3["Stereo_Fundamental_Matrix"] >> F;
+    fs3["Stereo_Rotation_Matrix"] >> stereoRotation;
+    fs3["Stereo_Translation_Vector"] >> stereoTranslation;
+
     //initialize cv::Mat objects to hold the images
     cv::Mat image_L;
     cv::Mat image_R;
     cv::Mat image_L_gray;
     cv::Mat image_R_gray;
+    cv::Mat image_L_undist;
+    cv::Mat image_R_undist;
 
     //read in the images
-    image_L = cv::imread("/home/jesse/Desktop/ECEN_631/Assignment_3/stereo_images/stereoL84.bmp",1);
-    image_R = cv::imread("/home/jesse/Desktop/ECEN_631/Assignment_3/stereo_images/stereoR84.bmp",1);
+    image_L = cv::imread("/home/jesse/Desktop/ECEN_631/Assignment_3/stereo_images/stereoL93.bmp",1);
+    image_R = cv::imread("/home/jesse/Desktop/ECEN_631/Assignment_3/stereo_images/stereoR93.bmp",1);
 
     //convert to Grayscale
     cv::cvtColor(image_L,image_L_gray,6);
     cv::cvtColor(image_R,image_R_gray,6);
 
-    //initialize cv::Mat objects to hold the undistorted images
-    cv::Mat image_L_undist;
-    cv::Mat image_R_undist;
-    cv::Mat image_L_undist_color;
-    cv::Mat image_R_undist_color;
-
+    //undistort L and R images
     cv::undistort(image_L_gray,image_L_undist,cameraMatrixL,distCoeffsL,cv::noArray());
     cv::undistort(image_R_gray,image_R_undist,cameraMatrixR,distCoeffsR,cv::noArray());
 
-    //convert back to color for drawing
-    cv::cvtColor(image_L_undist,image_L_undist_color,cv::COLOR_GRAY2BGR);
-    cv::cvtColor(image_R_undist,image_R_undist_color,cv::COLOR_GRAY2BGR);
+    //stereo rectify the image using stereoRectify()
+    //initialize output matrices for stereoRectify()
+    cv::Mat R1(3,3, CV_64F);
+    cv::Mat R2(3,3, CV_64F);
+    cv::Mat P1(3,4, CV_64F);
+    cv::Mat P2(3,4, CV_64F);
+    cv::Mat Q(4,4, CV_64F);
+    //stereoRectify
+    cv::stereoRectify(cameraMatrixL,distCoeffsL,cameraMatrixR,distCoeffsR,image_L_gray.size(),stereoRotation,stereoTranslation,R1,R2,P1,P2,Q,0,-1,image_L_undist.size(),0,0);
 
-    //draw 3 points of interest on each image
-    cv::circle(image_L_undist_color,cv::Point(189,166),3,cv::Scalar(0, 255, 0),2,8);
-    cv::circle(image_L_undist_color,cv::Point(394,284),3,cv::Scalar(0, 255, 0),2,8);
-    cv::circle(image_L_undist_color,cv::Point(196,254),3,cv::Scalar(0, 255, 0),2,8);
 
-    cv::circle(image_R_undist_color,cv::Point(189,187),3,cv::Scalar(0, 0, 255),2,8);
-    cv::circle(image_R_undist_color,cv::Point(236,85),3,cv::Scalar(0, 0, 255),2,8);
-    cv::circle(image_R_undist_color,cv::Point(162,68),3,cv::Scalar(0, 0, 255),2,8);
+    //compute undistortion and rectification transformation map for L and R using initUndistortRectifyMap()
+    //initialize output matrices for initUndistortRectifyMap()
+    cv::Mat map1_L;
+    cv::Mat map2_L;
+    cv::Mat map1_R;
+    cv::Mat map2_R;
+    //left camera
+    cv::initUndistortRectifyMap(cameraMatrixL,distCoeffsL,R1,P1,image_L_undist.size(),CV_32FC1,map1_L,map2_L);
+    //right camera
+    cv::initUndistortRectifyMap(cameraMatrixR,distCoeffsR,R2,P2,image_R_undist.size(),CV_32FC1,map1_R,map2_R);
 
-    //read in the fundamental matrix from stereo calibration
-    cv::Mat F;
-    cv::FileStorage fs3("/home/jesse/Desktop/ECEN_631/Assignment_3/build-task_2-Desktop_Qt_5_7_0_GCC_64bit-Default/stereo_calibration_parameters.xml", cv::FileStorage::READ);
-    fs3["Stereo_Fundamental_Matrix"] >> F;
 
-    //initialize vectors to hold epipolarLines
-    std::vector<cv::Point3f> epipolarLines_L;
-    std::vector<cv::Point3f> epipolarLines_R;
+    //remap the images using cv::remap()
+    //initialize output Mat for each image
+    cv::Mat image_L_rectified;
+    cv::Mat image_R_rectified;
+    //call remap() on L and R images
+    cv::remap(image_L_undist,image_L_rectified,map1_L,map2_L,cv::INTER_LINEAR,cv::BORDER_CONSTANT,0);
+    cv::remap(image_R_undist,image_R_rectified,map1_R,map2_R,cv::INTER_LINEAR,cv::BORDER_CONSTANT,0);
 
-    //define points of interest
-    std::vector<cv::Point2f> pts_of_interest_L = {cv::Point(189,166), cv::Point(394,284), cv::Point(196,254)};
-    std::vector<cv::Point2f> pts_of_interest_R = {cv::Point(189,187), cv::Point(236,85), cv::Point(162,68)};
 
-    //compute the epipolarLines corresponding to points of interest
-    cv::computeCorrespondEpilines(pts_of_interest_L,1,F,epipolarLines_L);
-    cv::computeCorrespondEpilines(pts_of_interest_R,2,F,epipolarLines_R);
+    //compute the absolute difference between the original and rectified images
+    cv::Mat image_L_diff;
+    cv::Mat image_R_diff;
+    cv::absdiff(image_L_undist,image_L_rectified,image_L_diff);
+    cv::absdiff(image_R_undist,image_R_rectified,image_R_diff);
 
-    //draw the lines with custom function
-    drawEpipolarLines(image_R_undist_color,epipolarLines_L,cv::Scalar(0,255,0));
-    drawEpipolarLines(image_L_undist_color,epipolarLines_R,cv::Scalar(0,0,255));
+    //convert back to color for drawing lines
+    cv::Mat image_L_rectified_color;
+    cv::Mat image_R_rectified_color;
+    cv::cvtColor(image_L_rectified,image_L_rectified_color,cv::COLOR_GRAY2BGR);
+    cv::cvtColor(image_R_rectified,image_R_rectified_color,cv::COLOR_GRAY2BGR);
+
+    //draw some horizontal lines on each image
+    int horz_1_y = 72;
+    int horz_2_y = 180;
+    int horz_3_y = 304;
+    cv::line(image_L_rectified_color,cv::Point2f(1,horz_1_y),cv::Point2f((image_L_rectified_color.cols -1),horz_1_y),cv::Scalar(0,0,255),1,8);
+    cv::line(image_L_rectified_color,cv::Point2f(1,horz_2_y),cv::Point2f((image_L_rectified_color.cols -1),horz_2_y),cv::Scalar(0,0,255),1,8);
+    cv::line(image_L_rectified_color,cv::Point2f(1,horz_3_y),cv::Point2f((image_L_rectified_color.cols -1),horz_3_y),cv::Scalar(0,0,255),1,8);
+
+    cv::line(image_R_rectified_color,cv::Point2f(1,horz_1_y),cv::Point2f((image_L_rectified_color.cols -1),horz_1_y),cv::Scalar(0,0,255),1,8);
+    cv::line(image_R_rectified_color,cv::Point2f(1,horz_2_y),cv::Point2f((image_L_rectified_color.cols -1),horz_2_y),cv::Scalar(0,0,255),1,8);
+    cv::line(image_R_rectified_color,cv::Point2f(1,horz_3_y),cv::Point2f((image_L_rectified_color.cols -1),horz_3_y),cv::Scalar(0,0,255),1,8);
+
 
     //Display the images
-    cv::imshow("Left Image",image_L_undist_color);
-    cv::imshow("Right Image",image_R_undist_color);
+    cv::imshow("Left Image",image_L_rectified_color);
+    cv::imshow("Right Image",image_R_rectified_color);
+    cv::imshow("Left Absolute Difference",image_L_diff);
+    cv::imshow("Right Absolute Difference",image_R_diff);
 
     //save to file
-    //cv::imwrite("/home/jesse/Desktop/ECEN_631/Assignment_3/task_3_epipolars_left_image.bmp",image_L_undist_color);
-    //cv::imwrite("/home/jesse/Desktop/ECEN_631/Assignment_3/task_3_epipolars_right_image.bmp",image_R_undist_color);
+    cv::imwrite("/home/jesse/Desktop/ECEN_631/Assignment_3/task_4_rectified_L.bmp",image_L_rectified_color);
+    cv::imwrite("/home/jesse/Desktop/ECEN_631/Assignment_3/task_4_rectified_R.bmp",image_R_rectified_color);
+    cv::imwrite("/home/jesse/Desktop/ECEN_631/Assignment_3/task_4_absdiff_L.bmp",image_L_diff);
+    cv::imwrite("/home/jesse/Desktop/ECEN_631/Assignment_3/task_4_absdiff_R.bmp",image_R_diff);
 
     cv::waitKey(0);
 
     //cleanup
     cv::destroyAllWindows();
 
-    return 0;
-}
 
-//function definition
-void drawEpipolarLines(cv::Mat image, std::vector<cv::Point3f> epipolarLines, cv::Scalar color)
-{
-    for(int i=0;i<epipolarLines.size();i++)
-    {
-        cv::Point3f ep_line = epipolarLines[i];
-        //y = -(a/b)*x - (c/b)
-        float y1 = -(ep_line.x/ep_line.y)*10.0 - (ep_line.z/ep_line.y);                 //y value of point on ep_line 10 pixels from left edge
-        float y2 = -(ep_line.x/ep_line.y)*(image.cols - 10) - (ep_line.z/ep_line.y);    //y value of point on ep_line 10 pixels from right edge
-        //draw the line
-        cv::line(image,cv::Point2f(10,y1),cv::Point2f(630,y2),color,1,8);
-    }
+    return 0;
 }
