@@ -59,7 +59,7 @@ int main()
 
     cv::circle(image_R_undist_color,cv::Point(189,187),3,cv::Scalar(0, 0, 255),2,8);
     cv::circle(image_R_undist_color,cv::Point(236,85),3,cv::Scalar(0, 0, 255),2,8);
-    cv::circle(image_R_undist_color,cv::Point(162,68),3,cv::Scalar(0, 0, 255),2,8);
+    cv::circle(image_R_undist_color,cv::Point(301,223),3,cv::Scalar(0, 0, 255),2,8);
 
     //read in the fundamental matrix from stereo calibration
     cv::Mat F;
@@ -72,7 +72,7 @@ int main()
 
     //define points of interest
     std::vector<cv::Point2f> pts_of_interest_L = {cv::Point(189,166), cv::Point(394,284), cv::Point(196,254)};
-    std::vector<cv::Point2f> pts_of_interest_R = {cv::Point(189,187), cv::Point(236,85), cv::Point(162,68)};
+    std::vector<cv::Point2f> pts_of_interest_R = {cv::Point(189,187), cv::Point(236,85), cv::Point(301,223)};
 
     //compute the epipolarLines corresponding to points of interest
     cv::computeCorrespondEpilines(pts_of_interest_L,1,F,epipolarLines_L);
