@@ -126,6 +126,5 @@ int main()
     //cleanup
     cv::destroyAllWindows();
 
-
     return 0;
 }
