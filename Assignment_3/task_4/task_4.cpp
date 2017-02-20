@@ -116,10 +116,10 @@ int main()
     cv::imshow("Right Absolute Difference",image_R_diff);
 
     //save to file
-    cv::imwrite("/home/jesse/Desktop/ECEN_631/Assignment_3/task_4_rectified_L.bmp",image_L_rectified_color);
-    cv::imwrite("/home/jesse/Desktop/ECEN_631/Assignment_3/task_4_rectified_R.bmp",image_R_rectified_color);
-    cv::imwrite("/home/jesse/Desktop/ECEN_631/Assignment_3/task_4_absdiff_L.bmp",image_L_diff);
-    cv::imwrite("/home/jesse/Desktop/ECEN_631/Assignment_3/task_4_absdiff_R.bmp",image_R_diff);
+    //cv::imwrite("/home/jesse/Desktop/ECEN_631/Assignment_3/task_4_rectified_L.bmp",image_L_rectified_color);
+    //cv::imwrite("/home/jesse/Desktop/ECEN_631/Assignment_3/task_4_rectified_R.bmp",image_R_rectified_color);
+    //cv::imwrite("/home/jesse/Desktop/ECEN_631/Assignment_3/task_4_absdiff_L.bmp",image_L_diff);
+    //cv::imwrite("/home/jesse/Desktop/ECEN_631/Assignment_3/task_4_absdiff_R.bmp",image_R_diff);
 
     cv::waitKey(0);
 
