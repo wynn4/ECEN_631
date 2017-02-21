@@ -49,7 +49,7 @@ int main()
         //Generate file path to the image (string)
         int image_number = i;
         std::string number = std::to_string(image_number);
-        std::string path_begin = "/home/jesse/Desktop/ECEN_631/Assignment_3/ImagesJesse/stereoL";
+        std::string path_begin = "/home/jesse/Desktop/ECEN_631/Assignment_3/stereo_images/stereoL";
         std::string path_end = ".bmp";
         std::string file = path_begin + number + path_end;
 
@@ -119,7 +119,7 @@ int main()
         //Generate file path to the image (string)
         int image_number = i;
         std::string number = std::to_string(image_number);
-        std::string path_begin = "/home/jesse/Desktop/ECEN_631/Assignment_3/ImagesJesse/stereoR";
+        std::string path_begin = "/home/jesse/Desktop/ECEN_631/Assignment_3/stereo_images/stereoR";
         std::string path_end = ".bmp";
         std::string file = path_begin + number + path_end;
 
