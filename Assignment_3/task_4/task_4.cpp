@@ -60,16 +60,16 @@ int main()
     //stereoRectify
     cv::stereoRectify(cameraMatrixL,distCoeffsL,cameraMatrixR,distCoeffsR,image_L_gray.size(),stereoRotation,stereoTranslation,R1,R2,P1,P2,Q,0,-1,image_L_gray.size(),0,0);
 
-    std::cout <<"===== R1 =====" << std::endl;
-    std::cout << R1 << std::endl;
-    std::cout <<"===== R2 =====" << std::endl;
-    std::cout << R2 << std::endl;
-    std::cout <<"===== P1 =====" << std::endl;
-    std::cout << P1 << std::endl;
-    std::cout <<"===== P2 =====" << std::endl;
-    std::cout << P2 << std::endl;
-    std::cout <<"===== Q =====" << std::endl;
-    std::cout << Q << std::endl;
+//    std::cout <<"===== R1 =====" << std::endl;
+//    std::cout << R1 << std::endl;
+//    std::cout <<"===== R2 =====" << std::endl;
+//    std::cout << R2 << std::endl;
+//    std::cout <<"===== P1 =====" << std::endl;
+//    std::cout << P1 << std::endl;
+//    std::cout <<"===== P2 =====" << std::endl;
+//    std::cout << P2 << std::endl;
+//    std::cout <<"===== Q =====" << std::endl;
+//    std::cout << Q << std::endl;
 
     //compute undistortion and rectification transformation map for L and R using initUndistortRectifyMap()
     //initialize output matrices for initUndistortRectifyMap()

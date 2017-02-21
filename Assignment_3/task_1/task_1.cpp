@@ -9,7 +9,7 @@
 int main()
 {
     //Define number of calibration images
-    int num_images = 32;
+    int num_images = 99;
 
     //Store imageSize
     cv::Size imageSize;
@@ -45,9 +45,9 @@ int main()
     for (int i=0;i<num_images;i++)
     {
         //Generate file path to the image (string)
-        int image_number = i;
+        int image_number = i+1;
         std::string number = std::to_string(image_number);
-        std::string path_begin = "/home/jesse/Desktop/ECEN_631/Assignment_3/Images/imageR";
+        std::string path_begin = "/home/jesse/Desktop/ECEN_631/Assignment_3/my_images/rightR";
         std::string path_end = ".bmp";
         std::string file = path_begin + number + path_end;
 
@@ -70,7 +70,7 @@ int main()
         if(corners_found)
         {
             //Refine corner locations
-            cv::cornerSubPix(image_gray, corners, cv::Size(11, 11), cv::Size(-1, -1),cv::TermCriteria(CV_TERMCRIT_EPS | CV_TERMCRIT_ITER, 30, 0.1));
+            cv::cornerSubPix(image_gray, corners, cv::Size(11, 11), cv::Size(-1, -1),cv::TermCriteria(CV_TERMCRIT_EPS | CV_TERMCRIT_ITER, 30, 0.001));
 
             //Draw on the colored image so it's pretty
             cv::drawChessboardCorners(image_color, board_size, corners, corners_found);
