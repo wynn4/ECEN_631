@@ -37,20 +37,18 @@ int main()
     cv::Mat image_R;
     cv::Mat image_L_gray;
     cv::Mat image_R_gray;
-    cv::Mat image_L_undist;
-    cv::Mat image_R_undist;
 
     //read in the images
-    image_L = cv::imread("/home/jesse/Desktop/ECEN_631/Assignment_3/stereo_images/stereoL93.bmp",1);
-    image_R = cv::imread("/home/jesse/Desktop/ECEN_631/Assignment_3/stereo_images/stereoR93.bmp",1);
+    image_L = cv::imread("/home/jesse/Desktop/ECEN_631/Assignment_3/Images/stereoL17.bmp",1);
+    image_R = cv::imread("/home/jesse/Desktop/ECEN_631/Assignment_3/Images/stereoR17.bmp",1);
 
     //convert to Grayscale
     cv::cvtColor(image_L,image_L_gray,6);
     cv::cvtColor(image_R,image_R_gray,6);
 
     //undistort L and R images
-    cv::undistort(image_L_gray,image_L_undist,cameraMatrixL,distCoeffsL,cv::noArray());
-    cv::undistort(image_R_gray,image_R_undist,cameraMatrixR,distCoeffsR,cv::noArray());
+    //cv::undistort(image_L_gray,image_L_undist,cameraMatrixL,distCoeffsL,cv::noArray());
+    //cv::undistort(image_R_gray,image_R_undist,cameraMatrixR,distCoeffsR,cv::noArray());
 
     //stereo rectify the image using stereoRectify()
     //initialize output matrices for stereoRectify()
@@ -60,8 +58,18 @@ int main()
     cv::Mat P2(3,4, CV_64F);
     cv::Mat Q(4,4, CV_64F);
     //stereoRectify
-    cv::stereoRectify(cameraMatrixL,distCoeffsL,cameraMatrixR,distCoeffsR,image_L_gray.size(),stereoRotation,stereoTranslation,R1,R2,P1,P2,Q,0,-1,image_L_undist.size(),0,0);
+    cv::stereoRectify(cameraMatrixL,distCoeffsL,cameraMatrixR,distCoeffsR,image_L_gray.size(),stereoRotation,stereoTranslation,R1,R2,P1,P2,Q,0,-1,image_L_gray.size(),0,0);
 
+    std::cout <<"===== R1 =====" << std::endl;
+    std::cout << R1 << std::endl;
+    std::cout <<"===== R2 =====" << std::endl;
+    std::cout << R2 << std::endl;
+    std::cout <<"===== P1 =====" << std::endl;
+    std::cout << P1 << std::endl;
+    std::cout <<"===== P2 =====" << std::endl;
+    std::cout << P2 << std::endl;
+    std::cout <<"===== Q =====" << std::endl;
+    std::cout << Q << std::endl;
 
     //compute undistortion and rectification transformation map for L and R using initUndistortRectifyMap()
     //initialize output matrices for initUndistortRectifyMap()
@@ -70,9 +78,9 @@ int main()
     cv::Mat map1_R;
     cv::Mat map2_R;
     //left camera
-    cv::initUndistortRectifyMap(cameraMatrixL,distCoeffsL,R1,P1,image_L_undist.size(),CV_32FC1,map1_L,map2_L);
+    cv::initUndistortRectifyMap(cameraMatrixL,distCoeffsL,R1,P1,image_L.size(),CV_32FC1,map1_L,map2_L);
     //right camera
-    cv::initUndistortRectifyMap(cameraMatrixR,distCoeffsR,R2,P2,image_R_undist.size(),CV_32FC1,map1_R,map2_R);
+    cv::initUndistortRectifyMap(cameraMatrixR,distCoeffsR,R2,P2,image_R.size(),CV_32FC1,map1_R,map2_R);
 
 
     //remap the images using cv::remap()
@@ -80,15 +88,15 @@ int main()
     cv::Mat image_L_rectified;
     cv::Mat image_R_rectified;
     //call remap() on L and R images
-    cv::remap(image_L_undist,image_L_rectified,map1_L,map2_L,cv::INTER_LINEAR,cv::BORDER_CONSTANT,0);
-    cv::remap(image_R_undist,image_R_rectified,map1_R,map2_R,cv::INTER_LINEAR,cv::BORDER_CONSTANT,0);
+    cv::remap(image_L_gray,image_L_rectified,map1_L,map2_L,cv::INTER_LINEAR,cv::BORDER_CONSTANT,0);
+    cv::remap(image_R_gray,image_R_rectified,map1_R,map2_R,cv::INTER_LINEAR,cv::BORDER_CONSTANT,0);
 
 
     //compute the absolute difference between the original and rectified images
     cv::Mat image_L_diff;
     cv::Mat image_R_diff;
-    cv::absdiff(image_L_undist,image_L_rectified,image_L_diff);
-    cv::absdiff(image_R_undist,image_R_rectified,image_R_diff);
+    cv::absdiff(image_L_gray,image_L_rectified,image_L_diff);
+    cv::absdiff(image_R_gray,image_R_rectified,image_R_diff);
 
     //convert back to color for drawing lines
     cv::Mat image_L_rectified_color;

@@ -9,7 +9,7 @@
 int main()
 {
     //Define number of calibration images
-    int num_images = 100;
+    int num_images = 32;
 
     //Store imageSize
     cv::Size imageSize;
@@ -49,7 +49,7 @@ int main()
         //Generate file path to the image (string)
         int image_number = i;
         std::string number = std::to_string(image_number);
-        std::string path_begin = "/home/jesse/Desktop/ECEN_631/Assignment_3/stereo_images/stereoL";
+        std::string path_begin = "/home/jesse/Desktop/ECEN_631/Assignment_3/Images/stereoL";
         std::string path_end = ".bmp";
         std::string file = path_begin + number + path_end;
 
@@ -119,7 +119,7 @@ int main()
         //Generate file path to the image (string)
         int image_number = i;
         std::string number = std::to_string(image_number);
-        std::string path_begin = "/home/jesse/Desktop/ECEN_631/Assignment_3/stereo_images/stereoR";
+        std::string path_begin = "/home/jesse/Desktop/ECEN_631/Assignment_3/Images/stereoR";
         std::string path_end = ".bmp";
         std::string file = path_begin + number + path_end;
 

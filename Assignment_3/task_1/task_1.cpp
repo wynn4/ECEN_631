@@ -9,7 +9,7 @@
 int main()
 {
     //Define number of calibration images
-    int num_images = 99;
+    int num_images = 32;
 
     //Store imageSize
     cv::Size imageSize;
@@ -18,7 +18,7 @@ int main()
     cv::Size board_size = cv::Size(10,7);
 
     //Define Chessboard square width (inches)
-    int square_width = 3.88;
+    float square_width = 3.88;
 
     //Define image objects
     cv::Mat image;
@@ -45,9 +45,9 @@ int main()
     for (int i=0;i<num_images;i++)
     {
         //Generate file path to the image (string)
-        int image_number = i+1;
+        int image_number = i;
         std::string number = std::to_string(image_number);
-        std::string path_begin = "/home/jesse/Desktop/ECEN_631/Assignment_3/my_images/rightR";
+        std::string path_begin = "/home/jesse/Desktop/ECEN_631/Assignment_3/Images/imageR";
         std::string path_end = ".bmp";
         std::string file = path_begin + number + path_end;
 
