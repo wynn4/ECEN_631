@@ -32,8 +32,11 @@ int main()
     cv::Mat image_R_gray;
 
     //read in the images
-    image_L = cv::imread("/home/jesse/Desktop/ECEN_631/Assignment_3/Images/stereoL17.bmp",1);
-    image_R = cv::imread("/home/jesse/Desktop/ECEN_631/Assignment_3/Images/stereoR17.bmp",1);
+//    image_L = cv::imread("/home/jesse/Desktop/ImageJae/stereoL17.bmp",1);
+//    image_R = cv::imread("/home/jesse/Desktop/ImageJae/stereoR17.bmp",1);
+
+    image_L = cv::imread("/home/jesse/Desktop/ECEN_631/Assignment_3/stereo_images/stereoL84.bmp");
+    image_R = cv::imread("/home/jesse/Desktop/ECEN_631/Assignment_3/stereo_images/stereoR84.bmp");
 
     //convert to Grayscale
     cv::cvtColor(image_L,image_L_gray,6);

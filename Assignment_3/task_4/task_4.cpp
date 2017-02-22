@@ -39,16 +39,16 @@ int main()
     cv::Mat image_R_gray;
 
     //read in the images
-    image_L = cv::imread("/home/jesse/Desktop/ECEN_631/Assignment_3/Images/stereoL17.bmp",1);
-    image_R = cv::imread("/home/jesse/Desktop/ECEN_631/Assignment_3/Images/stereoR17.bmp",1);
+    //image_L = cv::imread("/home/jesse/Desktop/ImageJae/stereoL17.bmp",1);
+    //image_R = cv::imread("/home/jesse/Desktop/ImageJae/stereoR17.bmp",1);
+
+    image_L = cv::imread("/home/jesse/Desktop/ECEN_631/Assignment_3/stereo_images/stereoL84.bmp");
+    image_R = cv::imread("/home/jesse/Desktop/ECEN_631/Assignment_3/stereo_images/stereoR84.bmp");
 
     //convert to Grayscale
     cv::cvtColor(image_L,image_L_gray,6);
     cv::cvtColor(image_R,image_R_gray,6);
 
-    //undistort L and R images
-    //cv::undistort(image_L_gray,image_L_undist,cameraMatrixL,distCoeffsL,cv::noArray());
-    //cv::undistort(image_R_gray,image_R_undist,cameraMatrixR,distCoeffsR,cv::noArray());
 
     //stereo rectify the image using stereoRectify()
     //initialize output matrices for stereoRectify()
@@ -60,16 +60,6 @@ int main()
     //stereoRectify
     cv::stereoRectify(cameraMatrixL,distCoeffsL,cameraMatrixR,distCoeffsR,image_L_gray.size(),stereoRotation,stereoTranslation,R1,R2,P1,P2,Q,0,-1,image_L_gray.size(),0,0);
 
-//    std::cout <<"===== R1 =====" << std::endl;
-//    std::cout << R1 << std::endl;
-//    std::cout <<"===== R2 =====" << std::endl;
-//    std::cout << R2 << std::endl;
-//    std::cout <<"===== P1 =====" << std::endl;
-//    std::cout << P1 << std::endl;
-//    std::cout <<"===== P2 =====" << std::endl;
-//    std::cout << P2 << std::endl;
-//    std::cout <<"===== Q =====" << std::endl;
-//    std::cout << Q << std::endl;
 
     //compute undistortion and rectification transformation map for L and R using initUndistortRectifyMap()
     //initialize output matrices for initUndistortRectifyMap()
@@ -105,18 +95,28 @@ int main()
     cv::cvtColor(image_R_rectified,image_R_rectified_color,cv::COLOR_GRAY2BGR);
 
     //draw some horizontal lines on each image
-    int horz_1_y = 72;
-    int horz_2_y = 180;
-    int horz_3_y = 304;
+    int horz_1_y = 60;
+    int horz_2_y = 120;
+    int horz_3_y = 180;
+    int horz_4_y = 240;
+    int horz_5_y = 300;
+    int horz_6_y = 360;
+    int horz_7_y = 420;
     cv::line(image_L_rectified_color,cv::Point2f(1,horz_1_y),cv::Point2f((image_L_rectified_color.cols -1),horz_1_y),cv::Scalar(0,0,255),1,8);
     cv::line(image_L_rectified_color,cv::Point2f(1,horz_2_y),cv::Point2f((image_L_rectified_color.cols -1),horz_2_y),cv::Scalar(0,0,255),1,8);
     cv::line(image_L_rectified_color,cv::Point2f(1,horz_3_y),cv::Point2f((image_L_rectified_color.cols -1),horz_3_y),cv::Scalar(0,0,255),1,8);
+    cv::line(image_L_rectified_color,cv::Point2f(1,horz_4_y),cv::Point2f((image_L_rectified_color.cols -1),horz_4_y),cv::Scalar(0,0,255),1,8);
+    cv::line(image_L_rectified_color,cv::Point2f(1,horz_5_y),cv::Point2f((image_L_rectified_color.cols -1),horz_5_y),cv::Scalar(0,0,255),1,8);
+    cv::line(image_L_rectified_color,cv::Point2f(1,horz_6_y),cv::Point2f((image_L_rectified_color.cols -1),horz_6_y),cv::Scalar(0,0,255),1,8);
+    cv::line(image_L_rectified_color,cv::Point2f(1,horz_7_y),cv::Point2f((image_L_rectified_color.cols -1),horz_7_y),cv::Scalar(0,0,255),1,8);
 
     cv::line(image_R_rectified_color,cv::Point2f(1,horz_1_y),cv::Point2f((image_L_rectified_color.cols -1),horz_1_y),cv::Scalar(0,0,255),1,8);
     cv::line(image_R_rectified_color,cv::Point2f(1,horz_2_y),cv::Point2f((image_L_rectified_color.cols -1),horz_2_y),cv::Scalar(0,0,255),1,8);
     cv::line(image_R_rectified_color,cv::Point2f(1,horz_3_y),cv::Point2f((image_L_rectified_color.cols -1),horz_3_y),cv::Scalar(0,0,255),1,8);
-
-
+    cv::line(image_R_rectified_color,cv::Point2f(1,horz_4_y),cv::Point2f((image_L_rectified_color.cols -1),horz_4_y),cv::Scalar(0,0,255),1,8);
+    cv::line(image_R_rectified_color,cv::Point2f(1,horz_5_y),cv::Point2f((image_L_rectified_color.cols -1),horz_5_y),cv::Scalar(0,0,255),1,8);
+    cv::line(image_R_rectified_color,cv::Point2f(1,horz_6_y),cv::Point2f((image_L_rectified_color.cols -1),horz_6_y),cv::Scalar(0,0,255),1,8);
+    cv::line(image_R_rectified_color,cv::Point2f(1,horz_7_y),cv::Point2f((image_L_rectified_color.cols -1),horz_7_y),cv::Scalar(0,0,255),1,8);
     //Display the images
     cv::imshow("Left Image",image_L_rectified_color);
     cv::imshow("Right Image",image_R_rectified_color);

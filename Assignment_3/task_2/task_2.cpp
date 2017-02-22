@@ -8,7 +8,8 @@
 
 int main()
 {
-    //Define number of calibration images
+    //Define number of stereo calibration image pairs
+//    int num_images = 35;  //ImageJae
     int num_images = 100;
 
     //Store imageSize
@@ -49,6 +50,7 @@ int main()
         //Generate file path to the image (string)
         int image_number = i;
         std::string number = std::to_string(image_number);
+//        std::string path_begin = "/home/jesse/Desktop/ImageJae/stereoL";
         std::string path_begin = "/home/jesse/Desktop/ECEN_631/Assignment_3/stereo_images/stereoL";
         std::string path_end = ".bmp";
         std::string file = path_begin + number + path_end;
@@ -67,12 +69,12 @@ int main()
         cv::cvtColor(image, image_gray, 6); //convert to grayscale (COLOR_BGR2GRAY == 6)
 
         //Find Chessboard corners
-        bool corners_found = cv::findChessboardCorners(image_gray,board_size,corners,1 + 2);
+        bool corners_found = cv::findChessboardCorners(image_gray,board_size,corners,1 + 2); //1 + 2
 
         if(corners_found)
         {
             //Refine corner locations
-            cv::cornerSubPix(image_gray, corners, cv::Size(11, 11), cv::Size(-1, -1),cv::TermCriteria(CV_TERMCRIT_EPS | CV_TERMCRIT_ITER, 30, 0.001));
+            cv::cornerSubPix(image_gray, corners, cv::Size(5, 5), cv::Size(-1, -1),cv::TermCriteria(CV_TERMCRIT_EPS + CV_TERMCRIT_ITER, 60, 0.001));
 
             //Draw on the colored image so it's pretty
             cv::drawChessboardCorners(image_color, board_size, corners, corners_found);
@@ -119,6 +121,7 @@ int main()
         //Generate file path to the image (string)
         int image_number = i;
         std::string number = std::to_string(image_number);
+//        std::string path_begin = "/home/jesse/Desktop/ImageJae/stereoR";
         std::string path_begin = "/home/jesse/Desktop/ECEN_631/Assignment_3/stereo_images/stereoR";
         std::string path_end = ".bmp";
         std::string file = path_begin + number + path_end;
@@ -142,7 +145,7 @@ int main()
         if(corners_found)
         {
             //Refine corner locations
-            cv::cornerSubPix(image_gray, corners, cv::Size(11, 11), cv::Size(-1, -1),cv::TermCriteria(CV_TERMCRIT_EPS | CV_TERMCRIT_ITER, 30, 0.1));
+            cv::cornerSubPix(image_gray, corners, cv::Size(5, 5), cv::Size(-1, -1),cv::TermCriteria(CV_TERMCRIT_EPS + CV_TERMCRIT_ITER, 60, 0.001));
 
             //Draw on the colored image so it's pretty
             cv::drawChessboardCorners(image_color, board_size, corners, corners_found);
