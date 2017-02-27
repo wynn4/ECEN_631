@@ -50,7 +50,7 @@ int main()
         int image_number = i;
         std::string number = std::to_string(image_number);
         //std::string path_begin = "/home/jesse/Desktop/ImageJae/leftL";
-        std::string path_begin = "/home/jesse/Desktop/ECEN_631/Assignment_3/my_images/rightR";
+        std::string path_begin = "/home/jesse/Desktop/ECEN_631/Assignment_3/my_images/leftL";
         std::string path_end = ".bmp";
         std::string file = path_begin + number + path_end;
 
@@ -131,10 +131,10 @@ int main()
 
     //Write Calibration Intrinsic and Distortion parameters to .txt file
 
-    std::string filename = "camera_R_parameters.txt";
+    std::string filename = "camera_L_parameters.txt";
     std::FILE* file;
     file = std::fopen(filename.c_str(),"w");
-    std::fprintf(file,"Assignment3 Task_1 Right Camera Calibration File\n\n");
+    std::fprintf(file,"Assignment3 Task_1 Left Camera Calibration File\n\n");
     std::fprintf(file,"Camera Intrinsic Parameters:\n\n");
     for(int i=0;i<Intrinsic_Matrix.rows;i++)
     {
@@ -154,7 +154,7 @@ int main()
     std::fclose(file);
 
     //Write Calibration Intrinsic and Distortion parameters to .xml file (this is the preferred method)
-    cv::FileStorage fs("camera_R_parameters.xml", cv::FileStorage::WRITE);
+    cv::FileStorage fs("camera_L_parameters.xml", cv::FileStorage::WRITE);
     fs << "Camera_Matrix" << Intrinsic_Matrix;
     fs << "Distortion_Coefficients" << Distortion_Coefficients;
 
