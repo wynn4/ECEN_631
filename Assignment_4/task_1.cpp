@@ -8,112 +8,138 @@
 
 int main()
 {
-    //Define number of calibration images
-//    int num_images = 40;    //left for ImageJae
-//    int num_images = 34;    //right for ImageJae
-    int num_images = 100;
+    //get the path to the stereo image pair
+    std::string leftImagePath = "/home/jesse/Desktop/ECEN_631/Assignment_3/stereo_images/stereoL53.bmp";
+    std::string rightImagePath = "/home/jesse/Desktop/ECEN_631/Assignment_3/stereo_images/stereoR53.bmp";
 
-    //Store imageSize
-    cv::Size imageSize;
+    //Create vectors to hold the corner locations
+    std::vector<cv::Point2f> cornersL;
+    std::vector<cv::Point2f> cornersR;
 
-    //Define board Size(width x height) of inner chessboard corners
-    cv::Size board_size = cv::Size(10,7);
+    //create vectors to hold the image points
+    std::vector<std::vector<cv::Point2f>> imagePointsL;
+    std::vector<std::vector<cv::Point2f>> imagePointsR;
 
-    //Define Chessboard square width (inches)
-    float square_width = 3.88;
+    //read in the images
+    cv::Mat imageL = cv::imread(leftImagePath,1);
+    cv::Mat imageR = cv::imread(rightImagePath,1);
 
-    //Define image objects
-    cv::Mat image;
-    cv::Mat image_gray;
-    cv::Mat image_color;
+    //get the image size and input board size
+    cv::Size imageSize = imageL.size();
+    cv::Size boardSize = cv::Size(10,7);
 
-    //Create imagePoints and objectPoints vectors
-    std::vector<std::vector<cv::Point2f>> imagePoints;
-    std::vector<std::vector<cv::Point3f>> objectPoints;
+    //convert to grayscale
+    cv::cvtColor(imageL,imageL,cv::COLOR_BGR2GRAY);
+    cv::cvtColor(imageR,imageR,cv::COLOR_BGR2GRAY);
 
-    //Populate ObjPts vector for images (assumes calibration chessboard doesn't change and all corners visible)
-    // *ObjPts for each image are identical
-    std::vector<cv::Point3f> ObjPts;
+    //find the chessboard corners
+    cv::findChessboardCorners(imageL,boardSize,cornersL,1 + 2);    //don't worry storing the returned boolean
+    cv::findChessboardCorners(imageR,boardSize,cornersR,1 + 2);
 
-    for(int y=0;y<board_size.height;y++)
+
+    //Refine corner locations
+    cv::cornerSubPix(imageL, cornersL, cv::Size(5, 5), cv::Size(-1, -1),cv::TermCriteria(CV_TERMCRIT_EPS + CV_TERMCRIT_ITER, 60, 0.001));
+    cv::cornerSubPix(imageR, cornersR, cv::Size(5, 5), cv::Size(-1, -1),cv::TermCriteria(CV_TERMCRIT_EPS + CV_TERMCRIT_ITER, 60, 0.001));
+
+    //Draw on the colored images so it's pretty
+    cv::cvtColor(imageL,imageL,cv::COLOR_GRAY2BGR);
+    cv::cvtColor(imageR,imageR,cv::COLOR_GRAY2BGR);
+
+    //Get the four corners
+    std::vector<cv::Point2f> fourCornersL = {cornersL[0],cornersL[9],cornersL[60],cornersL[69]};
+    std::vector<cv::Point2f> fourCornersR = {cornersR[0],cornersR[9],cornersR[60],cornersR[69]};
+
+    cv::drawChessboardCorners(imageL, boardSize, fourCornersL, false);
+    cv::drawChessboardCorners(imageR,boardSize,fourCornersR,false);
+
+    if(cornersL.size() == boardSize.width*boardSize.height && cornersR.size() == boardSize.width*boardSize.height)
     {
-        for(int x=0;x<board_size.width;x++)
+        //Initialize vector to hold ImagePoints for each calibration image
+        std::vector<cv::Point2f> ImgPtsL;
+        std::vector<cv::Point2f> ImgPtsR;
+
+        //Populate the ImgPts and ObjPts Vectors
+        for(int i=0;i<cornersL.size();i++)
         {
-            ObjPts.push_back(cv::Point3f(x*square_width,y*square_width,0));
+            cv::Point2f ImgPtL;
+            cv::Point2f ImgPtR;
+
+            ImgPtL.x = cornersL[i].x;
+            ImgPtL.y = cornersL[i].y;
+
+            ImgPtR.x = cornersR[i].x;
+            ImgPtR.y = cornersR[i].y;
+
+            //Push each ImgPt onto the ImgPts vector
+            ImgPtsL.push_back(ImgPtL);
+            ImgPtsR.push_back(ImgPtR);
         }
+        //Push the ImagePts vector onto the imagePoints vector
+        imagePointsL.push_back(ImgPtsL);
+        imagePointsR.push_back(ImgPtsR);
+    }
+    else
+    {
+        std::cout << "Board size and corner size mismatch (all corners may not have been detected).";
     }
 
+    //Read in the individual camera calibration intrinsic parameters from calibration in Assignment 3
+    cv::Mat cameraMatrixL;
+    cv::Mat cameraMatrixR;
+    cv::Mat distCoeffL;
+    cv::Mat distCoeffR;
 
-    for (int i=10;i<num_images;i++)
-    {
-        //Generate file path to the image (string)
-        int image_number = i;
-        std::string number = std::to_string(image_number);
-        //std::string path_begin = "/home/jesse/Desktop/ImageJae/leftL";
-        std::string path_begin = "/home/jesse/Desktop/ECEN_631/Assignment_3/my_images/rightR";
-        std::string path_end = ".bmp";
-        std::string file = path_begin + number + path_end;
+    cv::FileStorage fsL("/home/jesse/Desktop/ECEN_631/Assignment_3/build-task_1-Desktop_Qt_5_7_0_GCC_64bit-Default/camera_L_parameters.xml", cv::FileStorage::READ);
+    fsL["Camera_Matrix"] >> cameraMatrixL;
+    fsL["Distortion_Coefficients"] >> distCoeffL;
 
-        //Vector to store corners
-        std::vector<cv::Point2f> corners;
+    cv::FileStorage fsR("/home/jesse/Desktop/ECEN_631/Assignment_3/build-task_1-Desktop_Qt_5_7_0_GCC_64bit-Default/camera_R_parameters.xml", cv::FileStorage::READ);
+    fsR["Camera_Matrix"] >> cameraMatrixR;
+    fsR["Distortion_Coefficients"] >> distCoeffR;
 
-        //Read the image
-        image = cv::imread(file, 1);
-        image_color = image;
+    //Read in the stereo calibration extrinsic parameters from calibration in Assignment 3 task_2
+    cv::Mat R;
+    cv::Mat T;
+    cv::Mat E;
+    cv::Mat F;
 
-        //Get the image size
-        imageSize = cv::Size(image.cols, image.rows);
+    cv::FileStorage fsS("/home/jesse/Desktop/ECEN_631/Assignment_3/build-task_2-Desktop_Qt_5_7_0_GCC_64bit-Default/stereo_calibration_parameters.xml", cv::FileStorage::READ);
+    fsS["Stereo_Rotation_Matrix"] >> R;
+    fsS["Stereo_Translation_Vector"] >> T;
+    fsS["Stereo_Essential_Matirx"] >> E;
+    fsS["Stereo_Fundamental_Matirx"] >> F;
 
-        //Convert_to_Grayscale
-        cv::cvtColor(image, image_gray, 6); //convert to grayscale (COLOR_BGR2GRAY == 6)
+    //Stereo Rectify the two images
+    //initialize output Mats
+    cv::Mat R1(3,3, CV_64F);
+    cv::Mat R2(3,3, CV_64F);
+    cv::Mat P1(3,4, CV_64F);
+    cv::Mat P2(3,4, CV_64F);
+    cv::Mat Q(4,4, CV_64F);;
 
-        //Find Chessboard corners
-        bool corners_found = cv::findChessboardCorners(image_gray,board_size,corners,1 + 2);
+    cv::stereoRectify(cameraMatrixL,distCoeffL,cameraMatrixR,distCoeffR,imageSize,R,T,R1,R2,P1,P2,Q,0,-1,imageSize,0,0);
 
-        if(corners_found)
-        {
-            //Refine corner locations
-//            cv::cornerSubPix(image_gray, corners, cv::Size(11, 11), cv::Size(-1, -1),cv::TermCriteria(CV_TERMCRIT_EPS + CV_TERMCRIT_ITER, 30, 0.01));
-            cv::cornerSubPix(image_gray, corners, cv::Size(5, 5), cv::Size(-1, -1),cv::TermCriteria(CV_TERMCRIT_EPS + CV_TERMCRIT_ITER, 60, 0.001));
+    //Undistort the four corner points
+    std::vector<cv::Point2f> fourCornersLUndist;
+    std::vector<cv::Point2f> fourCornersRUndist;
 
-            //Draw on the colored image so it's pretty
-            cv::drawChessboardCorners(image_color, board_size, corners, corners_found);
+    cv::undistortPoints(fourCornersL,fourCornersLUndist,cameraMatrixL,distCoeffL,R1,P1);
+    cv::undistortPoints(fourCornersR,fourCornersRUndist,cameraMatrixR,distCoeffR,R2,P2);
 
-            if(corners.size() == board_size.width*board_size.height)
-            {
-                //Initialize vector to hold ImagePoints for each calibration image
-                std::vector<cv::Point2f> ImgPts;
+    //use cv::perspectiveTransform() to calculate 3D info of the four corner points
+    //
+    //see "Canonical Configuration OpenCV Function" Slide in 3D Reconstruction.pdf (also need to calculate disparity for the four corners)
+    //
+    //cv::perspectiveTransform();
 
-                //Populate the ImgPts and ObjPts Vectors
-                for(int i=0;i<corners.size();i++)
-                {
-                    cv::Point2f ImgPt;
-                    ImgPt.x = corners[i].x;
-                    ImgPt.y = corners[i].y;
+    cv::imshow("Stereo Left",imageL);
+    cv::imshow("Stereo Right", imageR);
+    cv::waitKey(0);
 
-                    //Push each ImgPt onto the ImgPts vector
-                    ImgPts.push_back(ImgPt);
-                }
-                //Push the ImagePts vector onto the imagePoints vector
-                imagePoints.push_back(ImgPts);
-            }
-            else
-            {
-                std::cout << "Board size and corner size mismatch (all corners may not have been detected).";
-            }
-        //Push the ObjPts vector onto the objectPoints vector
-        objectPoints.push_back(ObjPts);
-        }
-        else
-        {
-            std::cout << "Corners not found on image " << number << std::endl;
-        }
 
-        //show the image
-        cv::imshow("Chess Board", image_color);
-        cv::waitKey(20);
 
-    }
+
+    /*
     //ObjectPoints and ImagePoints gathered, time to calibrate
     //initialize rvecs and tvecs
     std::vector<cv::Mat> rvecs;
@@ -162,9 +188,9 @@ int main()
     //cv::FileStorage fs("camera_calibration_parameters.xml", cv::FileStorage::READ);
     //fs["Camera_Matrix"] >> Intrinsic_Matrix;
     //fs["Distortion_Coefficients"] >> Distortion_Coefficients;
+    */
 
     cv::destroyAllWindows();
-
 
     return 0;
 }
