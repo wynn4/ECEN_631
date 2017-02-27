@@ -189,7 +189,7 @@ int main()
     float fontSize = 0.5;
 
     cv::putText(imageL,corner1LStr,cv::Point(160,128),2,fontSize,cv::Scalar(0,255,0),1,8);
-    cv::putText(imageL,corner2LStr,cv::Point(344,181),2,fontSize,cv::Scalar(0,255,0),1,8);
+    cv::putText(imageL,corner2LStr,cv::Point(324,181),2,fontSize,cv::Scalar(0,255,0),1,8);
     cv::putText(imageL,corner3LStr,cv::Point(123,251),2,fontSize,cv::Scalar(0,255,0),1,8);
     cv::putText(imageL,corner4LStr,cv::Point(306,302),2,fontSize,cv::Scalar(0,255,0),1,8);
     cv::putText(imageL,"Red = Original Points",cv::Point(10,15),2,fontSize,cv::Scalar(0,0,255),1,8);
@@ -202,63 +202,14 @@ int main()
     cv::putText(imageR,"Red = Original Points",cv::Point(10,15),2,fontSize,cv::Scalar(0,0,255),1,8);
     cv::putText(imageR,"Green = Undistorted and Rectified Points",cv::Point(10,30),2,fontSize,cv::Scalar(0,255,0),1,8);
 
+    //display the images
     cv::imshow("Stereo Left",imageL);
     cv::imshow("Stereo Right", imageR);
     cv::waitKey(0);
 
-
-
-
-    /*
-    //ObjectPoints and ImagePoints gathered, time to calibrate
-    //initialize rvecs and tvecs
-    std::vector<cv::Mat> rvecs;
-    std::vector<cv::Mat> tvecs;
-
-    //initialize Intrinsic_Matrix and Distortion_Coefficients
-    cv::Mat Intrinsic_Matrix(3,3, CV_64F);
-    cv::Mat Distortion_Coefficients(5,1,CV_64F);
-
-
-    //calibrate using calibrateCamera function
-    cv::calibrateCamera(objectPoints,imagePoints,imageSize,Intrinsic_Matrix,Distortion_Coefficients,rvecs,tvecs);
-
-
-
-    //Write Calibration Intrinsic and Distortion parameters to .txt file
-
-    std::string filename = "camera_R_parameters.txt";
-    std::FILE* file;
-    file = std::fopen(filename.c_str(),"w");
-    std::fprintf(file,"Assignment3 Task_1 Right Camera Calibration File\n\n");
-    std::fprintf(file,"Camera Intrinsic Parameters:\n\n");
-    for(int i=0;i<Intrinsic_Matrix.rows;i++)
-    {
-        for(int j=0;j<Intrinsic_Matrix.cols;j++)
-        {
-            std::fprintf(file,"%lf ", Intrinsic_Matrix.at<double>(i,j));
-        }
-        std::fprintf(file,"\n");
-    }
-    std::fprintf(file,"\n");
-    std::fprintf(file,"Camera Distortion Coefficients:\n\n");
-    for(int i=0;i<Distortion_Coefficients.rows;i++)
-    {
-        std::fprintf(file,"%lf ", Distortion_Coefficients.at<double>(i));
-        std::fprintf(file,"\n");
-    }
-    std::fclose(file);
-
-    //Write Calibration Intrinsic and Distortion parameters to .xml file (this is the preferred method)
-    cv::FileStorage fs("camera_R_parameters.xml", cv::FileStorage::WRITE);
-    fs << "Camera_Matrix" << Intrinsic_Matrix;
-    fs << "Distortion_Coefficients" << Distortion_Coefficients;
-
-    //If we were to read this file it would look like:
-    //cv::FileStorage fs("camera_calibration_parameters.xml", cv::FileStorage::READ);
-    //fs["Camera_Matrix"] >> Intrinsic_Matrix;
-    //fs["Distortion_Coefficients"] >> Distortion_Coefficients;
-    */
+    //write images to file
+    cv::imwrite("/home/jesse/Desktop/ECEN_631/Assignment_4/3DpointsL.bmp",imageL);
+    cv::imwrite("/home/jesse/Desktop/ECEN_631/Assignment_4/3DpointsR.bmp",imageR);
 
     cv::destroyAllWindows();
 
