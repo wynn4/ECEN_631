@@ -38,11 +38,11 @@ int main()
 
     //_STEP_2: loop through the stereo images
     //define number of stereo image pairs
-    int numImages = 41;
+    int numImages = 26; //37 total
 
     //define filepath strings
-    std::string stereoL = "/home/jesse/Desktop/ECEN_631/Assignment_4/ball/ballL";
-    std::string stereoR = "/home/jesse/Desktop/ECEN_631/Assignment_4/ball/ballR";
+    std::string stereoL = "/home/jesse/Desktop/ECEN_631/Assignment_4/newBall/Ball_testL";
+    std::string stereoR = "/home/jesse/Desktop/ECEN_631/Assignment_4/newBall/Ball_testR";
 
     //create variables for imageNumber and imNum
     int imageNumber;
@@ -53,16 +53,16 @@ int main()
     cv::Mat imageR;
 
     //define first image to be the image that all others are differenced from
-    cv::Mat diffImageL = cv::imread("/home/jesse/Desktop/ECEN_631/Assignment_4/ball/ballL0.bmp",1);
-    cv::Mat diffImageR = cv::imread("/home/jesse/Desktop/ECEN_631/Assignment_4/ball/ballR0.bmp",1);
+    cv::Mat diffImageL = cv::imread("/home/jesse/Desktop/ECEN_631/Assignment_4/newBall/Ball_testL0.bmp",1);
+    cv::Mat diffImageR = cv::imread("/home/jesse/Desktop/ECEN_631/Assignment_4/newBall/Ball_testR0.bmp",1);
 
     //convert to grayscale
     cv::cvtColor(diffImageL,diffImageL,cv::COLOR_BGR2GRAY);
     cv::cvtColor(diffImageR,diffImageR,cv::COLOR_BGR2GRAY);
 
     //define ROI Rect for each camera to avoid processing entire image
-    cv::Rect roiL = cv::Rect(cv::Point(diffImageL.cols-340,diffImageL.rows-430),cv::Point(diffImageL.cols-190,diffImageL.rows));
-    cv::Rect roiR = cv::Rect(cv::Point(0,diffImageR.rows-430),cv::Point(diffImageR.cols-330,diffImageR.rows-50));
+    cv::Rect roiL = cv::Rect(cv::Point(diffImageL.cols-340,diffImageL.rows-430),cv::Point(diffImageL.cols-210,diffImageL.rows-300));
+    cv::Rect roiR = cv::Rect(cv::Point(diffImageL.cols-430,diffImageR.rows-430),cv::Point(diffImageR.cols-330,diffImageR.rows-290));
 
     //shrink differenced images to match ROI
     diffImageL = diffImageL(roiL);
@@ -89,17 +89,13 @@ int main()
         cv::absdiff(imageL,diffImageL,imageL);
         cv::absdiff(imageR,diffImageR,imageR);
 
-        //blur to reduce noise
-        cv::GaussianBlur(imageL,imageL,cv::Size(7,7),1.5,1.5);
-        cv::GaussianBlur(imageR,imageR,cv::Size(7,7),1.5,1.5);
-
         //threshold the images
-        cv::threshold(imageL,imageL,20,255,0);
-        cv::threshold(imageR,imageR,20,255,0);
+        cv::threshold(imageL,imageL,15,255,0);
+        cv::threshold(imageR,imageR,15,255,0);
 
-//        cv::imshow("Stereo Left", roiImageL);
+        cv::imshow("Stereo Left", imageL);
         cv::imshow("Stereo Right", imageR);
-        cv::waitKey(200); //~60fps 17
+        cv::waitKey(200); //~60fps = 17
     }
 
 
