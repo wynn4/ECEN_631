@@ -208,8 +208,8 @@ int main()
     cv::waitKey(0);
 
     //write images to file
-    cv::imwrite("/home/jesse/Desktop/ECEN_631/Assignment_4/3DpointsL.bmp",imageL);
-    cv::imwrite("/home/jesse/Desktop/ECEN_631/Assignment_4/3DpointsR.bmp",imageR);
+    //cv::imwrite("/home/jesse/Desktop/ECEN_631/Assignment_4/3DpointsL.bmp",imageL);
+    //cv::imwrite("/home/jesse/Desktop/ECEN_631/Assignment_4/3DpointsR.bmp",imageR);
 
     cv::destroyAllWindows();
 
