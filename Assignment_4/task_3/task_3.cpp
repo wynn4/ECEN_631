@@ -98,10 +98,37 @@ int main()
         rightCam3DBallCoordsInLeftCoordFrame.push_back(rightToLeft);
     }
 
-    //write 3D data to file to be read by MATLAB
+    //convert 3D ball coordinates measured from left camera to be relative to the catcher coordinates
+    int x_offset = 10;
+    int y_offset = -36;
+    int z_offset = -5;
+    cv::Point3f leftToCatcher;
+    cv::Point3f rightToCatcher;
+    std::vector<cv::Point3f> ballLeftCatcher;
+    std::vector<cv::Point3f> ballRigthCatcher;
+    for(int i=0;i<leftCam3DBallCoords.size();i++)
+    {
+        leftToCatcher = cv::Point3f(leftCam3DBallCoords[i].x + x_offset, leftCam3DBallCoords[i].y + y_offset, leftCam3DBallCoords[i].z + z_offset);
+        rightToCatcher = cv::Point3f(rightCam3DBallCoordsInLeftCoordFrame[i].x + x_offset, rightCam3DBallCoordsInLeftCoordFrame[i].y + y_offset, rightCam3DBallCoordsInLeftCoordFrame[i].z + z_offset);
+        ballLeftCatcher.push_back(leftToCatcher);
+        ballRigthCatcher.push_back(rightToCatcher);
+    }
+
+    //write 3D data to xml file and file to be read by MATLAB
     cv::FileStorage fs3D("/home/jesse/Desktop/ECEN_631/Assignment_4/3DWorldBallPointsL.xml", cv::FileStorage::WRITE);
-    fs3D << "leftCam3DBallCoords" << leftCam3DBallCoords;
-    fs3D << "rightCam3DBallCoords" << rightCam3DBallCoordsInLeftCoordFrame;
+    fs3D << "leftCam3DBallCoords" << ballLeftCatcher;
+    fs3D << "rightCam3DBallCoords" << ballRigthCatcher;
+
+    std::ofstream matlabfile1;
+    matlabfile1.open("/home/jesse/Desktop/ECEN_631/Assignment_4/leftCam3DBallCoords.txt");
+    matlabfile1 << cv::format(ballLeftCatcher,"MATLAB");
+    matlabfile1.close();
+
+    std::ofstream matlabfile2;
+    matlabfile2.open("/home/jesse/Desktop/ECEN_631/Assignment_4/rightCam3DBallCoords.txt");
+    matlabfile2 << cv::format(ballRigthCatcher,"MATLAB");
+    matlabfile2.close();
+
 
 
 
