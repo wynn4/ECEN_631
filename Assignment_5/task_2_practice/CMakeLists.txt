@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.12)
-project(Assignment5Task1)
+project(Assignment5Task2Practice)
 FIND_PACKAGE(OpenCV REQUIRED)
 
 
@@ -14,13 +14,13 @@ SET(CMAKE_AUTOUIC ON)
 
 
 SET(MYSOURCE
-    task_1.cpp
+    task_2_practice.cpp
     )
 
-add_executable(Assignment5Task1 WIN32
+add_executable(Assignment5Task2Practice WIN32
     ${MYSOURCE}
     )
 
-target_link_libraries(Assignment5Task1
+target_link_libraries(Assignment5Task2Practice
     ${OpenCV_LIBS}
     )
