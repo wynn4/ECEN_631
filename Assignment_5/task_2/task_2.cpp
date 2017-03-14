@@ -46,8 +46,8 @@ int main()
     //go through the corners vector an toss out any that are too close to the boundary
     for(int i=1;i<corners.size();i++)
     {
-        if(corners[i].x > searchWindowSize.width*2 && corners[i].x < (firstFrame.cols - searchWindowSize.width*2)
-           && corners[i].y > searchWindowSize.height*2 && corners[i].y < (firstFrame.rows - searchWindowSize.height*2))
+        if(corners[i].x > searchWindowSize.width*4 && corners[i].x < (firstFrame.cols - searchWindowSize.width*4)
+           && corners[i].y > searchWindowSize.height*4 && corners[i].y < (firstFrame.rows - searchWindowSize.height*4))
         {
             filteredCorners.push_back(corners[i]);
         }
@@ -128,7 +128,7 @@ int main()
 
 
         //convert back to color to display
-        cv::cvtColor(prevFrame,colorFrame,cv::COLOR_GRAY2BGR);
+        cv::cvtColor(nextFrame,colorFrame,cv::COLOR_GRAY2BGR);
 
         //draw green dot on all the original corner points
         for(int i=0;i<prevPts.size();i++)
