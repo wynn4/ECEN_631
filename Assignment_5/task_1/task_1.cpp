@@ -19,7 +19,7 @@ int main()
     cv::Mat frame;
     cv::Mat colorFrame;
 
-    int slowMultiplier = 10;
+    int slowMultiplier = 30;
 
     //create vector to hold pyramid points
     std::vector<cv::Point2f> pyramid;
