@@ -10,6 +10,8 @@ cv::Rect trimRect(cv::Point2f point, float desWidth, float desHeight, cv::Size f
 
 int main()
 {
+    //create videowriter object
+    cv::VideoWriter videoWrite("task_2_video.avi", CV_FOURCC('M','J','P','G'), 2, cv::Size(640,480));
 
     //get the path to the optical flow images
     std::string imagePath = "/home/jesse/Desktop/ECEN_631/Assignment_5/optical_flow/O";
@@ -136,7 +138,7 @@ int main()
         //draw red line between the current and previous points
         for(int i=0;i<prevPts.size();i++)
         {
-            cv::line(colorFrame,cv::Point(prevPts[i].x,prevPts[i].y),cv::Point(nextPts[i].x,nextPts[i].y),cv::Scalar(0,0,255),2,8,0);
+            cv::line(colorFrame,cv::Point(prevPts[i].x,prevPts[i].y),cv::Point(matchLocations[i].x,matchLocations[i].y),cv::Scalar(0,0,255),2,8,0);
         }
 
         //put text
@@ -146,15 +148,22 @@ int main()
         cv::imshow("frame",colorFrame);
         cv::waitKey(slowMultiplier*34);    //~30 fps
 
+        //write image to video
+        videoWrite.write(colorFrame);
+
         //clear and reset the vectors of points
         matchLocations.clear();
         prevPts.clear();
-        prevPts = nextPts;
+
+        //use goodFeaturesToTrack to get a new set of points to look at
+        cv::goodFeaturesToTrack(nextFrame,prevPts,500,0.01,10,mask,3,false,0.04);
+        //prevPts = nextPts;
         nextPts.clear();
         prevFrame = nextFrame;
 
         std::cout << i << std::endl;
     }
+
 
 
     prevFrame = firstFrame;
@@ -219,7 +228,7 @@ int main()
         //draw red line between the current and previous points
         for(int i=0;i<prevPts.size();i++)
         {
-            cv::line(colorFrame,cv::Point(prevPts[i].x,prevPts[i].y),cv::Point(nextPts[i].x,nextPts[i].y),cv::Scalar(0,0,255),2,8,0);
+            cv::line(colorFrame,cv::Point(prevPts[i].x,prevPts[i].y),cv::Point(matchLocations[i].x,matchLocations[i].y),cv::Scalar(0,0,255),2,8,0);
         }
 
         //put text
@@ -229,16 +238,25 @@ int main()
         cv::imshow("frame",colorFrame);
         cv::waitKey(slowMultiplier*34);    //~30 fps
 
+        //write image to video
+        videoWrite.write(colorFrame);
+
         //clear and reset the vectors of points
         matchLocations.clear();
         prevPts.clear();
-        prevPts = nextPts;
+
+        //use goodFeaturesToTrack to get a new set of points to look at
+        cv::goodFeaturesToTrack(nextFrame,prevPts,500,0.01,10,mask,3,false,0.04);
+        //prevPts = nextPts;
         nextPts.clear();
         prevFrame = nextFrame;
 
         std::cout << i << std::endl;
         i = i+1;
     }
+
+
+
 
 
     prevFrame = firstFrame;
@@ -303,7 +321,7 @@ int main()
         //draw red line between the current and previous points
         for(int i=0;i<prevPts.size();i++)
         {
-            cv::line(colorFrame,cv::Point(prevPts[i].x,prevPts[i].y),cv::Point(nextPts[i].x,nextPts[i].y),cv::Scalar(0,0,255),2,8,0);
+            cv::line(colorFrame,cv::Point(prevPts[i].x,prevPts[i].y),cv::Point(matchLocations[i].x,matchLocations[i].y),cv::Scalar(0,0,255),2,8,0);
         }
 
         //put text
@@ -313,16 +331,25 @@ int main()
         cv::imshow("frame",colorFrame);
         cv::waitKey(slowMultiplier*34);    //~30 fps
 
+        //write image to video
+        videoWrite.write(colorFrame);
+
         //clear and reset the vectors of points
         matchLocations.clear();
         prevPts.clear();
-        prevPts = nextPts;
+
+        //use goodFeaturesToTrack to get a new set of points to look at
+        cv::goodFeaturesToTrack(nextFrame,prevPts,500,0.01,10,mask,3,false,0.04);
+        //prevPts = nextPts;
         nextPts.clear();
         prevFrame = nextFrame;
 
         std::cout << i << std::endl;
         i = i+2;
     }
+
+
+
 
 
     cv::destroyAllWindows();

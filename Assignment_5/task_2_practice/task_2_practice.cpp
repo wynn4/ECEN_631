@@ -45,7 +45,7 @@ int main()
     cv::cvtColor(firstFrame,firstFrame,cv::COLOR_BGR2GRAY);
 
     //use goodFeaturesToTrack to find points to track
-    cv::goodFeaturesToTrack(firstFrame,corners,500,0.01,10,mask,3,false,0.04);
+    cv::goodFeaturesToTrack(firstFrame,corners,200,0.01,10,mask,3,false,0.04);
 
 
     //create Mat for prev and Next frame

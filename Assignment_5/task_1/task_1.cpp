@@ -9,6 +9,9 @@
 int main()
 {
 
+    //create videowriter object
+    cv::VideoWriter videoWrite("task_1_video.avi", CV_FOURCC('M','J','P','G'), 2, cv::Size(640,480));
+
     //get the path to the optical flow images
     std::string imagePath = "/home/jesse/Desktop/ECEN_631/Assignment_5/optical_flow/O";
     std::string imageNumber;
@@ -69,6 +72,7 @@ int main()
 
         nextFrame = frame;
 
+
         cv::calcOpticalFlowPyrLK(prevFrame,nextFrame,prevPts,nextPts,status,err);
 
         prevFrame = frame;
@@ -95,6 +99,12 @@ int main()
         //show the image
         cv::imshow("frame",colorFrame);
         cv::waitKey(slowMultiplier*34);    //~30 fps
+
+        //write image to video
+        videoWrite.write(colorFrame);
+
+        //use goodFeaturesToTrack to get a new set of previous points
+        cv::goodFeaturesToTrack(frame,prevPts,500,0.01,10,mask,3,false,0.04);
     }
 
     //Between n and n+2
@@ -138,6 +148,13 @@ int main()
         //show the image
         cv::imshow("frame",colorFrame);
         cv::waitKey(slowMultiplier*34);    //~30 fps
+
+        //write image to video
+        videoWrite.write(colorFrame);
+
+        //use goodFeaturesToTrack to get a new set of previous points
+        cv::goodFeaturesToTrack(frame,prevPts,500,0.01,10,mask,3,false,0.04);
+
         i = i+1;
     }
 
@@ -182,6 +199,13 @@ int main()
         //show the image
         cv::imshow("frame",colorFrame);
         cv::waitKey(slowMultiplier*34);    //~30 fps
+
+        //write image to video
+        videoWrite.write(colorFrame);
+
+        //use goodFeaturesToTrack to get a new set of previous points
+        cv::goodFeaturesToTrack(frame,prevPts,500,0.01,10,mask,3,false,0.04);
+
         i = i+2;
     }
 

@@ -20,14 +20,17 @@ int main()
     cv::Mat firstFrame;
     cv::Mat frame;
     cv::Mat colorFrame;
+    cv::Mat smallFrame;
 
     int slowMultiplier = 50;
+
 
     //create vector to hold feature corners
     std::vector<cv::Point2f> corners;
 
-    //mask for goodFeaturesToTrakc
-    cv::Mat mask = cv::Mat::zeros(frame.size(), CV_8UC1);
+    //mask for goodFeaturesToTrack
+    cv::Mat mask = cv::Mat::zeros(cv::Size(0,0), CV_8UC1);
+
 
     //define a searchWindowSize
     float searchWinWidth = 61;
@@ -42,8 +45,19 @@ int main()
     firstFrame = cv::imread("/home/jesse/Desktop/ECEN_631/Assignment_5/parallel_cube/ParallelCube10.jpg",1);
     cv::cvtColor(firstFrame,firstFrame,cv::COLOR_BGR2GRAY);
 
+    //define a smaller frame within firstFrame for goodFeaturesToTrack to look in
+    cv::Rect roi = cv::Rect(cv::Point(40,40), cv::Point(600,440));
+    smallFrame = firstFrame(roi);
+
     //use goodFeaturesToTrack to find points to track
-    cv::goodFeaturesToTrack(firstFrame,corners,1000,0.01,10,mask,3,false,0.04);
+    cv::goodFeaturesToTrack(smallFrame,corners,1000,0.01,10,mask,3,false,0.04);
+
+    //convert corner locations back into the full frame coordinates
+    for(int i=0;i<corners.size();i++)
+    {
+        corners[i].x = corners[i].x + 40;
+        corners[i].y = corners[i].y + 40;
+    }
 
     //create Mat for prev and Next frame
     cv::Mat prevFrame;
@@ -89,7 +103,7 @@ int main()
     std::vector<int> deleteIndices;
 
     //ransac tuning params
-    double param1 = 3;      //max distance (pixels) from epipolar for non-outlier
+    double param1 = 1;      //max distance (pixels) from epipolar for non-outlier
     double param2 = 0.99;   //confidence level that match is correct
 
     prevFrame = firstFrame;
@@ -118,17 +132,21 @@ int main()
             searchWindow = nextFrame(searchWindowRect);
 
             //use matchTemplate() to look for the template from the previous frame inside of the searchWindow inside of the nextFrame
-            cv::matchTemplate(searchWindow,templ,result,CV_TM_CCORR_NORMED);
+            cv::matchTemplate(searchWindow,templ,result,CV_TM_SQDIFF_NORMED);//CV_TM_CCORR_NORMED
             cv::minMaxLoc(result,&minVal,&maxVal,&minLoc,&maxLoc);
 
             //get the location of the match within the searchWindow
-            float maxLocX = (float)maxLoc.x;
-            float maxLocY = (float)maxLoc.y;
+            float maxLocX = (float)minLoc.x;
+            float maxLocY = (float)minLoc.y;
             matchLocation = cv::Point2f(maxLocX,maxLocY);
 
             //get the x and y coordinates of the searchWindow's top left corner
             float searchWindowTopLeft_x = searchWindowRect.tl().x;
             float searchWindowTopLeft_y = searchWindowRect.tl().y;
+
+//            //get the x and y coordinates of the template's top left corner
+//            float templateTopLeft_x = templateRect.tl().x;
+//            float templateTopLeft_y = templateRect.tl().y;
 
 
             //convert the location within the search window to a location within the whole frame
@@ -170,7 +188,7 @@ int main()
 
             for(int i=0;i<deleteIndices.size();i++)
             {
-                firstPrevPtsMatched.erase(firstPrevPtsMatched.begin() + deleteIndices[i] -1);
+                firstPrevPtsMatched.erase(firstPrevPtsMatched.begin() + deleteIndices[i]);
                 //std::cout << number_to_delete << std::endl;
             }
         }
@@ -180,7 +198,7 @@ int main()
 
             for(int i=0;i<deleteIndices.size();i++)
             {
-                firstPrevPtsMatched.erase(firstPrevPtsMatched.begin() + deleteIndices[i] -1);
+                firstPrevPtsMatched.erase(firstPrevPtsMatched.begin() + deleteIndices[i]);
                 //std::cout << number_to_delete << std::endl;
             }
 
