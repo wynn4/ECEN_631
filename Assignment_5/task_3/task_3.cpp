@@ -11,8 +11,8 @@ cv::Rect trimRect(cv::Point2f point, float desWidth, float desHeight, cv::Size f
 int main()
 {
 
-    //get the path to the optical flow images
-    std::string imagePath = "/home/jesse/Desktop/ECEN_631/Assignment_5/parallel_cube/ParallelCube";
+    //get the path to the template matching images
+    std::string imagePath = "/home/jesse/Desktop/ECEN_631/Assignment_5/turned_real/TurnReal";
     std::string imageNumber;
     std::string pathEnd = ".jpg";
     std::string fullPath;
@@ -22,7 +22,7 @@ int main()
     cv::Mat colorFrame;
     cv::Mat smallFrame;
 
-    int slowMultiplier = 50;
+    int slowMultiplier = 10;
 
 
     //create vector to hold feature corners
@@ -33,8 +33,8 @@ int main()
 
 
     //define a searchWindowSize
-    float searchWinWidth = 61;
-    float searchWinHeight = 61;
+    float searchWinWidth = 81;
+    float searchWinHeight = 81;
 
     //define a template size
     float templateWidth = 31;
@@ -42,7 +42,7 @@ int main()
 
 
     //Look at first image to find features to track
-    firstFrame = cv::imread("/home/jesse/Desktop/ECEN_631/Assignment_5/parallel_cube/ParallelCube10.jpg",1);
+    firstFrame = cv::imread("/home/jesse/Desktop/ECEN_631/Assignment_5/turned_real/TurnReal10.jpg",1);
     cv::cvtColor(firstFrame,firstFrame,cv::COLOR_BGR2GRAY);
 
     //define a smaller frame within firstFrame for goodFeaturesToTrack to look in
@@ -96,11 +96,12 @@ int main()
     std::vector<cv::Point2f> prevPtsMatched;
 
     //vector to hold first matching points
-    std::vector<cv::Point2f> firstPrevPtsMatched;
-    std::vector<cv::Point2f> lastNextPtsMatched;
+    std::vector<cv::Point2f> originalPrevPoints;
+    std::vector<cv::Point2f> lastSurvivingNextPoints;
 
-    //vector to hold delete indicies
-    std::vector<int> deleteIndices;
+    //set originalPrevPoints to be corners
+    originalPrevPoints = corners;
+
 
     //ransac tuning params
     double param1 = 1;      //max distance (pixels) from epipolar for non-outlier
@@ -156,54 +157,41 @@ int main()
             matchLocations.push_back(matchGlobalLocation);
         }
 
+        //set nextPoints equal to the matchLocations
         nextPts = matchLocations;
 
-        //filter out the outliers using cv::findFundamentalMat()
+
+        //get a filter mask (fmask) to eliminate outliers using cv::findFundamentalMat()
         F = cv::findFundamentalMat(prevPts,nextPts,fMask,CV_FM_RANSAC,param1,param2);
 
-        //go through the mask and where there's a (1), keep, where (0) toss
-        //std::cout << fMask.size().height << std::endl;
+
+        //go through the mask and where there's a '1', keep the point, where '0' toss it
         for(int i=0;i<fMask.size().height;i++)
         {
             if(fMask.at<bool>(0,i) == 1)
             {
                 nextPtsMatched.push_back(nextPts[i]);
                 prevPtsMatched.push_back(prevPts[i]);
-            }
-            else
-                deleteIndices.push_back(i);
-        }
 
-
-
-        if(i == 10) //first frame
-        {
-            firstPrevPtsMatched = prevPtsMatched;
-        }
-        else if(i==15)
-        {
-            lastNextPtsMatched = nextPtsMatched;
-
-            //go through firstPrevPtsMatched vector and erase elements at deleteIndices locations
-
-            for(int i=0;i<deleteIndices.size();i++)
-            {
-                firstPrevPtsMatched.erase(firstPrevPtsMatched.begin() + deleteIndices[i]);
-                //std::cout << number_to_delete << std::endl;
+                //push the indices corresponding to good points onto the pack of originalPrevPoints vector
+                originalPrevPoints.push_back(originalPrevPoints[i]);
             }
         }
-        else
+
+        //Then delete off the old points in the beginning of the originalPrevPoints vector
+        originalPrevPoints.erase(originalPrevPoints.begin(),originalPrevPoints.begin()+fMask.size().height);
+
+        // Note: At this point, originalPrevPoints contains only the points that survived the RANSAC mask
+
+
+        //last time through, populate lastNextPtsMatched with the nextPtsMatched points
+        if(i==15)
         {
-            //go through firstPrevPtsMatched vector and erase elements at deleteIndices locations
-
-            for(int i=0;i<deleteIndices.size();i++)
-            {
-                firstPrevPtsMatched.erase(firstPrevPtsMatched.begin() + deleteIndices[i]);
-                //std::cout << number_to_delete << std::endl;
-            }
-
+            lastSurvivingNextPoints = nextPtsMatched;
         }
 
+
+        //__Display Stuff___
 
         //convert back to color to display
         cv::cvtColor(nextFrame,colorFrame,cv::COLOR_GRAY2BGR);
@@ -225,66 +213,65 @@ int main()
 
         //show the image
         cv::imshow("frame",colorFrame);
-        cv::waitKey(slowMultiplier*34);    //~30 fps
+        cv::waitKey(slowMultiplier*34);    //~30 fps divided by slow multiplier
 
-        //clear and reset the vectors of points
+//        //check that they are the same size
+//        std::cout << prevPtsMatched.size() << std::endl;
+//        std::cout << originalPrevPoints.size() << std::endl;
+
+
+        //__CLEAR AND RESET for next loop
         matchLocations.clear();
         prevPts.clear();
         prevPts = nextPtsMatched;
         nextPts.clear();
         nextPtsMatched.clear();
         prevPtsMatched.clear();
-        deleteIndices.clear();
         prevFrame = nextFrame;
-
     }
 
 
-    //write firstPrevPtsMatched and lastNextPtsMatched to file
-    cv::FileStorage fs("first_and_last_points.xml", cv::FileStorage::WRITE);
-    fs << "First_Points" << firstPrevPtsMatched;
-    fs << "Last_Points" << lastNextPtsMatched;
 
-    //display the first and last points on their respective images
+    //__Display the first and last points on their respective images
     cv::Mat firstImage;
     cv::Mat lastImage;
 
-    firstImage = cv::imread("/home/jesse/Desktop/ECEN_631/Assignment_5/parallel_cube/ParallelCube10.jpg",1);
-    lastImage = cv::imread("/home/jesse/Desktop/ECEN_631/Assignment_5/parallel_cube/ParallelCube15.jpg",1);
+    firstImage = cv::imread("/home/jesse/Desktop/ECEN_631/Assignment_5/turned_real/TurnReal10.jpg",1);
+    lastImage = cv::imread("/home/jesse/Desktop/ECEN_631/Assignment_5/turned_real/TurnReal15.jpg",1);
 
     //draw green dot on all of the points that survive from the first frame on the first image
-    for(int i=0;i<firstPrevPtsMatched.size();i++)
+    for(int i=0;i<originalPrevPoints.size();i++)
     {
-       cv::circle(firstImage,cv::Point(firstPrevPtsMatched[i].x,firstPrevPtsMatched[i].y),1,cv::Scalar(0,255,0),2,8,0);
+        cv::circle(firstImage,cv::Point2f(originalPrevPoints[i].x,originalPrevPoints[i].y),1,cv::Scalar(0,255,0),2,8,0);
+        cv::line(firstImage,cv::Point2f(originalPrevPoints[i].x,originalPrevPoints[i].y),cv::Point2f(lastSurvivingNextPoints[i].x,lastSurvivingNextPoints[i].y),
+                 cv::Scalar(0,0,255));
     }
 
     //draw green dot on all of the points that survived from the first frame on the last image
-    for(int i=0;i<lastNextPtsMatched.size();i++)
+    for(int i=0;i<lastSurvivingNextPoints.size();i++)
     {
-       cv::circle(lastImage,cv::Point(lastNextPtsMatched[i].x,lastNextPtsMatched[i].y),1,cv::Scalar(0,255,0),2,8,0);
+        cv::circle(lastImage,cv::Point2f(lastSurvivingNextPoints[i].x,lastSurvivingNextPoints[i].y),1,cv::Scalar(0,255,0),2,8,0);
     }
 
-    std::cout << firstPrevPtsMatched.size() << std::endl;
-    std::cout << lastNextPtsMatched.size() << std::endl;
 
     //display the final image pair
     cv::imshow("First Frame", firstImage);
     cv::imshow("Last Frame", lastImage);
     cv::waitKey(0);
 
-//    //Read the individual camera calibration parameters from file
-//    cv::FileStorage fs1("/home/jesse/Desktop/ECEN_631/Assignment_3/build-task_1-Desktop_Qt_5_7_0_GCC_64bit-Default/camera_L_parameters.xml", cv::FileStorage::READ);
-//    fs1["Camera_Matrix"] >> cameraMatrixL;
-//    fs1["Distortion_Coefficients"] >> distCoeffsL;
-
-
-
+//    //write images to file
+//    cv::imwrite("/home/jesse/Desktop/ECEN_631/Assignment_5/turned_real_first.jpg",firstImage);
+//    cv::imwrite("/home/jesse/Desktop/ECEN_631/Assignment_5/turned_real_last.jpg",lastImage);
 
 
     cv::destroyAllWindows();
 
     return 0;
 }
+
+
+
+
 
 
 //function definition
