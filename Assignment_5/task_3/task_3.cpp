@@ -264,10 +264,10 @@ int main()
 //    cv::imwrite("/home/jesse/Desktop/ECEN_631/Assignment_5/turned_real_last.jpg",lastImage);
 
 
-    //write points to file
-    cv::FileStorage fs("first_and_last_turn_cube.xml", cv::FileStorage::WRITE);
-    fs << "first_points" << originalPrevPoints;
-    fs << "last_points" << lastSurvivingNextPoints;
+//    //write points to file
+//    cv::FileStorage fs("first_and_last_turn_cube.xml", cv::FileStorage::WRITE);
+//    fs << "first_points" << originalPrevPoints;
+//    fs << "last_points" << lastSurvivingNextPoints;
 
     cv::destroyAllWindows();
 
