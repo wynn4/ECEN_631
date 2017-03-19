@@ -73,8 +73,12 @@ int main()
 
     //calculate essential matrix E from F (using equation on slide 28 of 3D Reconstruction lecture slides)
     cv::Mat E;
-
     E = M1.t()*F*M2;
+
+    //normalize E
+
+
+
 
 
 
