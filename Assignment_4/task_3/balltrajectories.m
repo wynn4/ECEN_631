@@ -34,10 +34,10 @@ b_all = [ballAll_y];
 x_left = (A_left'*A_left)\A_left'*b_left
 x_right = (A_right'*A_right)\A_right'*b_right
 x_all = (A_all'*A_all)\A_all'*b_all
-x_all_cpp = [-1.76712e-07;
-            0.000425296;
-            -0.316199;
-            0.026123]
+x_all_cpp = [-1.2633589e-07;
+            0.0004016856;
+            -0.30914328;
+            -0.95018423]
 
 t = 0:1:500;
 for i=1:length(t)
@@ -69,7 +69,7 @@ end
 
 
 figure(1)
-plot(ballLeft_z,ballLeft_y,'ro',ballRight_z,ballRight_y,'bo',t,y_left,'r',t,y_right,'b',t,y_all,'g')
+plot(ballLeft_z,ballLeft_y,'ro',ballRight_z,ballRight_y,'bo',t,y_left,'r',t,y_right,'b',t,y_all_cpp,'g')
 axis([0,500,0,80])
 xlabel('Z (inches)')
 ylabel('Y (inches)')
