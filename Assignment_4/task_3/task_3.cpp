@@ -4,6 +4,7 @@
 #include <opencv2/opencv.hpp>
 #include <opencv2/video/video.hpp>
 #include <opencv2/highgui/highgui.hpp>
+#include <eigen3/Eigen/Dense>
 
 
 int main()
@@ -104,33 +105,123 @@ int main()
     int z_offset = -5;
     cv::Point3f leftToCatcher;
     cv::Point3f rightToCatcher;
-    std::vector<cv::Point3f> ballLeftCatcher;
-    std::vector<cv::Point3f> ballRigthCatcher;
+    //std::vector<cv::Point3f> ballLeftCatcher;
+    //std::vector<cv::Point3f> ballRigthCatcher;
+    std::vector<cv::Point3f> allBallPoints; //L and R combined
     for(int i=0;i<leftCam3DBallCoords.size();i++)
     {
         leftToCatcher = cv::Point3f(leftCam3DBallCoords[i].x + x_offset, leftCam3DBallCoords[i].y + y_offset, leftCam3DBallCoords[i].z + z_offset);
         rightToCatcher = cv::Point3f(rightCam3DBallCoordsInLeftCoordFrame[i].x + x_offset, rightCam3DBallCoordsInLeftCoordFrame[i].y + y_offset, rightCam3DBallCoordsInLeftCoordFrame[i].z + z_offset);
-        ballLeftCatcher.push_back(leftToCatcher);
-        ballRigthCatcher.push_back(rightToCatcher);
+        //ballLeftCatcher.push_back(leftToCatcher);
+        //ballRigthCatcher.push_back(rightToCatcher);
+        allBallPoints.push_back(leftToCatcher);
+        allBallPoints.push_back(rightToCatcher);
     }
 
-    //write 3D data to xml file and file to be read by MATLAB
-    cv::FileStorage fs3D("/home/jesse/Desktop/ECEN_631/Assignment_4/3DWorldBallPointsL.xml", cv::FileStorage::WRITE);
-    fs3D << "leftCam3DBallCoords" << ballLeftCatcher;
-    fs3D << "rightCam3DBallCoords" << ballRigthCatcher;
 
-    std::ofstream matlabfile1;
-    matlabfile1.open("/home/jesse/Desktop/ECEN_631/Assignment_4/leftCam3DBallCoords.txt");
-    matlabfile1 << cv::format(ballLeftCatcher,"MATLAB");
-    matlabfile1.close();
+    //massage the data into format acceptable to class Eigen
+    Eigen::VectorXf xPoints(allBallPoints.size());
+    Eigen::VectorXf yPoints(allBallPoints.size());
+    Eigen::VectorXf zPoints(allBallPoints.size());
 
-    std::ofstream matlabfile2;
-    matlabfile2.open("/home/jesse/Desktop/ECEN_631/Assignment_4/rightCam3DBallCoords.txt");
-    matlabfile2 << cv::format(ballRigthCatcher,"MATLAB");
-    matlabfile2.close();
+    for(int i=0;i<allBallPoints.size();i++)
+    {
+        xPoints(i) = allBallPoints[i].x;
+        yPoints(i) = allBallPoints[i].y;
+        zPoints(i) = allBallPoints[i].z;
+    }
+    //std::cout << xPoints << std::endl;
+
+    //make vectors and matrix in preparation for computing LS solution
+    Eigen::VectorXf cubeTermZ(allBallPoints.size());
+    Eigen::VectorXf squareTermZ(allBallPoints.size());
+    Eigen::VectorXf singleTermZ(allBallPoints.size());
+    Eigen::VectorXf constTermZ(allBallPoints.size());
+
+    for(int i=0;i<allBallPoints.size();i++)
+    {
+        cubeTermZ(i) = zPoints(i)*zPoints(i)*zPoints(i);
+        squareTermZ(i) = zPoints(i)*zPoints(i);
+        singleTermZ(i) = zPoints(i);
+        constTermZ(i) = 1;
+    }
+
+    //create the A matrix(s)
+    Eigen::MatrixXf A_yz(allBallPoints.size(),4);
+    Eigen::MatrixXf A_xz(allBallPoints.size(),4);
+    Eigen::VectorXf b_yz(allBallPoints.size());
+    Eigen::VectorXf b_xz(allBallPoints.size());
+    A_yz << cubeTermZ, squareTermZ, singleTermZ, constTermZ;
+    b_yz = yPoints;
+    A_xz = A_yz;
+    b_xz = xPoints;
 
 
 
+    //std::cout << A_yz << std::endl;
+    Eigen::VectorXf x_yz(4);
+    Eigen::VectorXf x_xz(4);
+    x_yz = ((A_yz.transpose() * A_yz).inverse())*A_yz.transpose()*b_yz;
+    x_xz = ((A_xz.transpose() * A_xz).inverse())*A_xz.transpose()*b_xz;
+
+    std::cout << x_yz << std::endl;
+
+    float finalYCoord = x_yz(3);
+    float finalXCoord = x_xz(3);
+    std::cout << finalYCoord << "\t" << finalXCoord << std::endl;
+
+    //solve using least squares
+//    std::cout << "The solution using the QR decomposition is:\n"
+//         << A_yz.colPivHouseholderQr().solve(b_yz) << std::endl;
+
+
+
+//    //write 3D data to xml file and file to be read by MATLAB
+//    cv::FileStorage fs3D("/home/jesse/Desktop/ECEN_631/Assignment_4/3DWorldBallPointsL.xml", cv::FileStorage::WRITE);
+//    fs3D << "leftCam3DBallCoords" << ballLeftCatcher;
+//    fs3D << "rightCam3DBallCoords" << ballRigthCatcher;
+
+//    std::ofstream matlabfile1;
+//    matlabfile1.open("/home/jesse/Desktop/ECEN_631/Assignment_4/leftCam3DBallCoords.txt");
+//    matlabfile1 << cv::format(ballLeftCatcher,"MATLAB");
+//    matlabfile1.close();
+
+//    std::ofstream matlabfile2;
+//    matlabfile2.open("/home/jesse/Desktop/ECEN_631/Assignment_4/rightCam3DBallCoords.txt");
+//    matlabfile2 << cv::format(ballRigthCatcher,"MATLAB");
+//    matlabfile2.close();
+
+//    //convert 3D points to two sets of 2D points (x,z) and (y,z)
+//    std::vector<cv::Point2f> XZPoints;
+//    std::vector<cv::Point2f> YZPoints;
+//    for(int i=0;i<ballLeftCatcher.size();i++)
+//    {
+//        float x_coord = ballLeftCatcher[i].x;
+//        float y_coord = ballLeftCatcher[i].y;
+//        float z_coord = ballLeftCatcher[i].z;
+
+//        cv::Point2f xz = cv::Point2f(x_coord,z_coord);
+//        cv::Point2f yz = cv::Point2f(y_coord,z_coord);
+
+//        XZPoints.push_back(xz);
+//        YZPoints.push_back(yz);
+//    }
+
+    //use approxPolyDP to fit a curve to the data
+    std::vector<cv::Point2f> XZOutputCurve;
+    std::vector<cv::Point2f> YZOutputCurve;
+    double epsilon = 0.1;
+
+//    cv::approxPolyDP(XZPoints,XZOutputCurve,epsilon,false);
+
+//    Eigen::VectorXf test(4);
+//    test << 0, 1, 2, 3;
+//    std::cout << test << std::endl;
+//    Eigen::VectorXf cubed(4);
+
+
+
+//    std::cout << A << std::endl;
 
     return 0;
 }

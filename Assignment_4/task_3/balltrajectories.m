@@ -14,24 +14,37 @@ ballRight_x = ballRight(:,1);
 ballRight_y = -ballRight(:,2);
 ballRight_z = ballRight(:,3);
 
+ballAll_x = [ballLeft_x; ballRight_x];
+ballAll_y = [ballLeft_y; ballRight_y];
+ballAll_z = [ballLeft_z; ballRight_z];
 %use least squares to fit a parabola to the Y Z data
 
 %y = ax^2 + bx + c;
 
-A_left = [ballLeft_z.^2, ballLeft_z, ones(23,1)];
+A_left = [ballLeft_z.^3, ballLeft_z.^2, ballLeft_z, ones(23,1)];
 b_left = [ballLeft_y];
 
-A_right = [ballRight_z.^2, ballRight_z, ones(23,1)];
+A_right = [ballRight_z.^3, ballRight_z.^2, ballRight_z, ones(23,1)];
 b_right = [ballRight_y];
 
+A_all = [ballAll_z.^3, ballAll_z.^2, ballAll_z, ones(46,1)]
+b_all = [ballAll_y];
+
 %least squares pseudo inverse
-x_left = (A_left'*A_left)\A_left'*b_left;
-x_right = (A_right'*A_right)\A_right'*b_right;
+x_left = (A_left'*A_left)\A_left'*b_left
+x_right = (A_right'*A_right)\A_right'*b_right
+x_all = (A_all'*A_all)\A_all'*b_all
+x_all_cpp = [-1.76712e-07;
+            0.000425296;
+            -0.316199;
+            0.026123]
 
 t = 0:1:500;
 for i=1:length(t)
-    y_left(i) = x_left(1,1)*t(i)^2 + x_left(2,1)*t(i) + x_left(3,1);
-    y_right(i) = x_right(1,1)*t(i)^2 + x_right(2,1)*t(i) + x_right(3,1);
+    y_left(i) = x_left(1,1)*t(i)^3 + x_left(2,1)*t(i)^2 + x_left(3,1)*t(i) + x_left(4,1);
+    y_right(i) = x_right(1,1)*t(i)^3 + x_right(2,1)*t(i)^2 + x_right(3,1)*t(i) + x_right(4,1);
+    y_all(i) = x_all(1,1)*t(i)^3 + x_all(2,1)*t(i)^2 + x_all(3,1)*t(i) + x_all(4,1);
+    y_all_cpp(i) = x_all_cpp(1,1)*t(i)^3 + x_all_cpp(2,1)*t(i)^2 + x_all_cpp(3,1)*t(i) + x_all_cpp(4,1);
 end
 
 
@@ -56,7 +69,7 @@ end
 
 
 figure(1)
-plot(ballLeft_z,ballLeft_y,'ro',ballRight_z,ballRight_y,'bo',t,y_left,'r',t,y_right,'b')
+plot(ballLeft_z,ballLeft_y,'ro',ballRight_z,ballRight_y,'bo',t,y_left,'r',t,y_right,'b',t,y_all,'g')
 axis([0,500,0,80])
 xlabel('Z (inches)')
 ylabel('Y (inches)')
@@ -72,6 +85,9 @@ title('Baseball Catcher Ball Position X vs Z')
 legend('L measured','R measured', 'L Least-Squares', 'R Least-Squares','Location','northwest')
 
 
+figure(3)
+plot(t,y_all_cpp)
 
+figure(4)
 
 
