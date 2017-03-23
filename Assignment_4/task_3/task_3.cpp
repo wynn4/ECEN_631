@@ -146,13 +146,29 @@ int main()
         constTermZ(i) = 1;
     }
 
-    //create the A matrix
+    //create the A matrix(s)
     Eigen::MatrixXf A_yz(allBallPoints.size(),4);
+    Eigen::MatrixXf A_xz(allBallPoints.size(),4);
     Eigen::VectorXf b_yz(allBallPoints.size());
+    Eigen::VectorXf b_xz(allBallPoints.size());
     A_yz << cubeTermZ, squareTermZ, singleTermZ, constTermZ;
     b_yz = yPoints;
+    A_xz = A_yz;
+    b_xz = xPoints;
 
-    std::cout << A_yz << std::endl;
+
+
+    //std::cout << A_yz << std::endl;
+    Eigen::VectorXf x_yz(4);
+    Eigen::VectorXf x_xz(4);
+    x_yz = ((A_yz.transpose() * A_yz).inverse())*A_yz.transpose()*b_yz;
+    x_xz = ((A_xz.transpose() * A_xz).inverse())*A_xz.transpose()*b_xz;
+
+    std::cout << x_yz << std::endl;
+
+    float finalYCoord = x_yz(3);
+    float finalXCoord = x_xz(3);
+    std::cout << finalYCoord << "\t" << finalXCoord << std::endl;
 
     //solve using least squares
 //    std::cout << "The solution using the QR decomposition is:\n"
