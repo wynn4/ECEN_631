@@ -18,20 +18,20 @@ ballRight_z = ballRight(:,3);
 
 %y = ax^2 + bx + c;
 
-A_left = [ballLeft_z.^2, ballLeft_z, ones(23,1)];
+A_left = [ballLeft_z.^3, ballLeft_z.^2, ballLeft_z, ones(23,1)];
 b_left = [ballLeft_y];
 
-A_right = [ballRight_z.^2, ballRight_z, ones(23,1)];
+A_right = [ballRight_z.^3, ballRight_z.^2, ballRight_z, ones(23,1)];
 b_right = [ballRight_y];
 
 %least squares pseudo inverse
-x_left = (A_left'*A_left)\A_left'*b_left;
-x_right = (A_right'*A_right)\A_right'*b_right;
+x_left = (A_left'*A_left)\A_left'*b_left
+x_right = (A_right'*A_right)\A_right'*b_right
 
 t = 0:1:500;
 for i=1:length(t)
-    y_left(i) = x_left(1,1)*t(i)^2 + x_left(2,1)*t(i) + x_left(3,1);
-    y_right(i) = x_right(1,1)*t(i)^2 + x_right(2,1)*t(i) + x_right(3,1);
+    y_left(i) = x_left(1,1)*t(i)^3 + x_left(2,1)*t(i)^2 + x_left(3,1)*t(i) + x_left(4,1);
+    y_right(i) = x_right(1,1)*t(i)^3 + x_right(2,1)*t(i)^2 + x_right(3,1)*t(i) + x_right(4,1);
 end
 
 
@@ -46,8 +46,8 @@ A_right_x = [ballRight_z.^2, ballRight_z, ones(23,1)];
 b_right_x = [ballRight_x];
 
 %least squares pseudo inverse
-x_left_x = (A_left_x'*A_left_x)\A_left_x'*b_left_x;
-x_right_x = (A_right_x'*A_right_x)\A_right_x'*b_right_x;
+x_left_x = (A_left_x'*A_left_x)\A_left_x'*b_left_x
+x_right_x = (A_right_x'*A_right_x)\A_right_x'*b_right_x
 
 for i=1:length(t)
     y_left_x(i) = x_left_x(1,1)*t(i)^2 + x_left_x(2,1)*t(i) + x_left_x(3,1);

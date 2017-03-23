@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 2.8.12)
 project(Assignment4Task3)
 FIND_PACKAGE(OpenCV REQUIRED)
+#FIND_PACKAGE(EIGEN3 REQUIRED)
+
+
 
 
 add_compile_options(-std=c++0x)
@@ -12,6 +15,7 @@ SET(CMAKE_AUTOUIC ON)
 #    ${SOIL_INCLUDE_DIRS}
 #    )
 
+#INCLUDE_DIRECTORIES(${EIGEN3_INCLUDE_DIR})
 
 SET(MYSOURCE
     task_3.cpp
