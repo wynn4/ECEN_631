@@ -104,7 +104,7 @@ int main()
 
 
     //ransac tuning params
-    double param1 = 1;      //max distance (pixels) from epipolar for non-outlier
+    double param1 = 0.01;      //max distance (pixels) from epipolar for non-outlier
     double param2 = 0.99;   //confidence level that match is correct
 
     prevFrame = firstFrame;
@@ -266,10 +266,10 @@ int main()
 //    cv::imwrite("/home/jesse/Desktop/ECEN_631/Assignment_5/turned_real_last.jpg",lastImage);
 
 
-//    //write points to file
-//    cv::FileStorage fs("first_and_last_turned_real.xml", cv::FileStorage::WRITE);
-//    fs << "first_points" << originalPrevPoints;
-//    fs << "last_points" << lastSurvivingNextPoints;
+    //write points to file
+    cv::FileStorage fs("first_and_last_turned_real.xml", cv::FileStorage::WRITE);
+    fs << "first_points" << originalPrevPoints;
+    fs << "last_points" << lastSurvivingNextPoints;
 
     cv::destroyAllWindows();
 

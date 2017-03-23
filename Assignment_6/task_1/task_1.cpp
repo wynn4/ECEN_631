@@ -9,7 +9,7 @@
 
 int main()
 {
-    //set which image set are we working with
+    //set which image set we are working with
     std::string imageFolder = "turned_real";  //parallel_cube parallel_real turned_cube turned real
     std::string imageName = "TurnReal";     //ParallelCube ParallelReal TurnCube TurnReal
 
@@ -36,16 +36,16 @@ int main()
 
 
     //Make a guess for the camera calibration matrix (intrinsic matrix) M1 and M2 and distCoefficients
-    double fx = 820;
-    double fy = 820;
+    double fx = 825;
+    double fy = 825;
     double cx = 320;
     double cy = 240;
 
-    double k1 = 0;
-    double k2 = 0;
+    double k1 = -0.1;
+    double k2 = 0.05;
     double p1 = 0;
-    double p2 = 0;
-    double k3 = 0;
+    double p2 = -0.001;
+    double k3 = 0.2;
 
     double intrinsicGuess[9] = {fx, 0, cx,
                                 0, fy, cy,
@@ -63,6 +63,9 @@ int main()
     //Calculate R1 and R2
     cv::Mat R1 = M1.inv()*H1*M1;
     cv::Mat R2 = M2.inv()*H2*M2;
+
+    std::cout << R1 << std::endl;
+    std::cout << R2 << std::endl;
 
     //get the undistortRectifyMap
     cv::Mat map1First;
