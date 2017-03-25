@@ -94,20 +94,20 @@ int main()
         frameR = frameR(ROI_R);
 
         //absolute differnce each frame from the first frame
-        //cv::absdiff(frameL,firstFrameROI_L,frameL);
-        //cv::absdiff(frameR,firstFrameROI_R,frameR);
+        cv::absdiff(frameL,firstFrameROI_L,frameL);
+        cv::absdiff(frameR,firstFrameROI_R,frameR);
 
         //gaussian blur to reduce noise
         cv::GaussianBlur(frameL,frameL, cv::Size(11,11), 0,0);
         cv::GaussianBlur(frameR,frameR, cv::Size(11,11), 0,0);
 
         //threshold
-        //cv::threshold(frameL,frameL,imageThreshold,255,0);
-        //cv::threshold(frameR,frameR,imageThreshold,255,0);
+        cv::threshold(frameL,frameL,imageThreshold,255,0);
+        cv::threshold(frameR,frameR,imageThreshold,255,0);
 
         //canny lines to get ball
-        Canny(frameL,edgesL,100,255,3);
-        cout << edgesL.size() << endl;
+        //Canny(frameL,edgesL,100,255,3);
+        //cout << edgesL.size() << endl;
 
         //findContours
         //findContours(frameL, contoursL, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, Point(0,0));

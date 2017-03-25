@@ -45,13 +45,12 @@ int main()
     }
 
     //Build imagePoints and objectPoints vectors for Left Camera
-    for (int i=0;i<num_images;i++)
+    for (int i=1;i<num_images;i++)
     {
         //Generate file path to the image (string)
         int image_number = i;
         std::string number = std::to_string(image_number);
-//        std::string path_begin = "/home/jesse/Desktop/ImageJae/stereoL";
-        std::string path_begin = "/home/jesse/Desktop/ECEN_631/Assignment_3/stereo_images/stereoL";
+        std::string path_begin = "/home/jesse/Desktop/new_cal/NewL";
         std::string path_end = ".bmp";
         std::string file = path_begin + number + path_end;
 
@@ -116,13 +115,12 @@ int main()
     }
 
     //Build imagePoints and objectPoints vectors for Right Camera
-    for (int i=0;i<num_images;i++)
+    for (int i=1;i<num_images;i++)
     {
         //Generate file path to the image (string)
         int image_number = i;
         std::string number = std::to_string(image_number);
-//        std::string path_begin = "/home/jesse/Desktop/ImageJae/stereoR";
-        std::string path_begin = "/home/jesse/Desktop/ECEN_631/Assignment_3/stereo_images/stereoR";
+        std::string path_begin = "/home/jesse/Desktop/new_cal/NewR";
         std::string path_end = ".bmp";
         std::string file = path_begin + number + path_end;
 
@@ -216,6 +214,15 @@ int main()
     //calibrate using calibrateCamera function
     cv::stereoCalibrate(objectPoints,imagePointsL,imagePointsR,cameraMatrixL,distCoeffsL,cameraMatrixR,distCoeffsR,imageSize,R,T,E,F);
 
+    //get the stereo rectification parameters
+    cv::Mat R1(3,3, CV_64F);
+    cv::Mat R2(3,3, CV_64F);
+    cv::Mat P1(3,4, CV_64F);
+    cv::Mat P2(3,4, CV_64F);
+    cv::Mat Q(4,4, CV_64F);
+
+    cv::stereoRectify(cameraMatrixL, distCoeffsL, cameraMatrixR, distCoeffsR, cv::Size(640,480),R,T,R1,R2,P1,P2,Q,0,-1,cv::Size(640,480),0,0);
+
 
     //Write stereo Calibration Parameters to .txt file
     std::string filename = "stereo_calibration_parameters.txt";
@@ -270,6 +277,11 @@ int main()
     fs << "Stereo_Translation_Vector" << T;
     fs << "Stereo_Essential_Matirx" << E;
     fs << "Stereo_Fundamental_Matrix" << F;
+    fs << "R1" << R1;
+    fs << "R2" << R2;
+    fs << "P1" << P1;
+    fs << "P2" << P2;
+    fs << "Q" << Q;
 
     return 0;
 }

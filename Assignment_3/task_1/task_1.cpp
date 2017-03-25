@@ -44,13 +44,12 @@ int main()
     }
 
 
-    for (int i=10;i<num_images;i++)
+    for (int i=1;i<num_images;i++)
     {
         //Generate file path to the image (string)
         int image_number = i;
         std::string number = std::to_string(image_number);
-        //std::string path_begin = "/home/jesse/Desktop/ImageJae/leftL";
-        std::string path_begin = "/home/jesse/Desktop/ECEN_631/Assignment_3/my_images/leftL";
+        std::string path_begin = "/home/jesse/Desktop/new_cal/NewL";
         std::string path_end = ".bmp";
         std::string file = path_begin + number + path_end;
 
@@ -153,10 +152,10 @@ int main()
     }
     std::fclose(file);
 
-    //Write Calibration Intrinsic and Distortion parameters to .xml file (this is the preferred method)
-    cv::FileStorage fs("camera_L_parameters.xml", cv::FileStorage::WRITE);
-    fs << "Camera_Matrix" << Intrinsic_Matrix;
-    fs << "Distortion_Coefficients" << Distortion_Coefficients;
+//    //Write Calibration Intrinsic and Distortion parameters to .xml file (this is the preferred method)
+//    cv::FileStorage fs("camera_L_parameters.xml", cv::FileStorage::WRITE);
+//    fs << "Camera_Matrix" << Intrinsic_Matrix;
+//    fs << "Distortion_Coefficients" << Distortion_Coefficients;
 
     //If we were to read this file it would look like:
     //cv::FileStorage fs("camera_calibration_parameters.xml", cv::FileStorage::READ);
