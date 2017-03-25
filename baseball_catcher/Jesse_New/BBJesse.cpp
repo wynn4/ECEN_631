@@ -9,7 +9,7 @@ using namespace cv;
 using namespace std;
 
 //tuning params
-int imageThreshold = 5;
+int imageThreshold = 20;
 
 int NumImages = 38;
 string directory = "/home/jesse/Desktop/ECEN_631/Assignment_4/newBall/";
@@ -31,9 +31,7 @@ Mat F;
 
 //__define ROI rectangles
 Point ROI_center_L = Point(358,120);
-
 Point ROI_center_R = Point(284,122);
-
 
 int widthL = 100;
 int heightL = 100;
@@ -70,6 +68,9 @@ vector<Vec4i> hierarchyR;
 Mat edgesL;
 Mat edgesR;
 
+//stuff for circles
+vector<Vec3f> circles;
+
 
 //function prototypes
 void readCalibrationData();
@@ -87,33 +88,40 @@ int main()
     for(int i=0;i<NumImages;i++)
     {
         int imageNumber = i;
-        frameL = cv::imread(directory + filename + "L" + std::to_string(imageNumber) + ".bmp", 1); //CV_LOAD_IMAGE_GRAYSCALE
+        frameL = cv::imread(directory + filename + "L" + std::to_string(imageNumber) + ".bmp", CV_LOAD_IMAGE_GRAYSCALE); //1
         frameL = frameL(ROI_L);
 
         frameR = cv::imread(directory + filename + "R" + std::to_string(imageNumber) + ".bmp", CV_LOAD_IMAGE_GRAYSCALE);
         frameR = frameR(ROI_R);
 
         //absolute differnce each frame from the first frame
-        //cv::absdiff(frameL,firstFrameROI_L,frameL);
-        //cv::absdiff(frameR,firstFrameROI_R,frameR);
+        cv::absdiff(frameL,firstFrameROI_L,frameL);
+        cv::absdiff(frameR,firstFrameROI_R,frameR);
 
         //gaussian blur to reduce noise
         cv::GaussianBlur(frameL,frameL, cv::Size(11,11), 0,0);
         cv::GaussianBlur(frameR,frameR, cv::Size(11,11), 0,0);
 
         //threshold
-        //cv::threshold(frameL,frameL,imageThreshold,255,0);
-        //cv::threshold(frameR,frameR,imageThreshold,255,0);
+        cv::threshold(frameL,frameL,imageThreshold,255,1);
+        cv::threshold(frameR,frameR,imageThreshold,255,1);
+
+
+        //try circles
+        //HoughCircles(frameL, circles, CV_HOUGH_GRADIENT, 1, frameL.rows/8, 10, 100, 0, 0);
+        //cout << circles.size() << endl;
+
 
         //canny lines to get ball
-        Canny(frameL,edgesL,100,255,3);
-        cout << edgesL.size() << endl;
+        //Canny(frameL,edgesL,100,255,3);
+        //cout << edgesL.size() << endl;
 
         //findContours
-        //findContours(frameL, contoursL, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, Point(0,0));
+        findContours(frameL, contoursL, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, Point(0,0));
+        cout << contoursL.size() << endl;
 
         cv::imshow("Left ROI", frameL);
-        cv::imshow("Right ROI", frameR);
+        //cv::imshow("Right ROI", frameR);
         cv::waitKey(200);
     }
 
