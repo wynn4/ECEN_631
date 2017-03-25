@@ -25,8 +25,8 @@ int main()
 
     //Use first and last points to estimate fundamental matrix F
     cv::Mat F;
-    F = cv::findFundamentalMat(firstPoints,lastPoints);
-
+    F = cv::findFundamentalMat(firstPoints,lastPoints,cv::noArray(),cv::FM_8POINT);
+    //cv::LMEDS
 
     //Use stereoRectifyUncalibrated() to compute rectification homographies H1 and H2
     cv::Mat H1;
@@ -120,9 +120,9 @@ int main()
     cv::waitKey(0);
 
 
-//    //write images to file
-//    cv::imwrite("/home/jesse/Desktop/ECEN_631/Assignment_6/task_1/" + imageName + "First.jpg",firstFrame);
-//    cv::imwrite("/home/jesse/Desktop/ECEN_631/Assignment_6/task_1/" + imageName + "Last.jpg",lastFrame);
+    //write images to file
+    cv::imwrite("/home/jesse/Desktop/ECEN_631/Assignment_6/task_1/" + imageName + "First.jpg",firstFrame);
+    cv::imwrite("/home/jesse/Desktop/ECEN_631/Assignment_6/task_1/" + imageName + "Last.jpg",lastFrame);
 
 
 

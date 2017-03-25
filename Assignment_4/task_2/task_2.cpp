@@ -171,7 +171,7 @@ int main()
 
         cv::imshow("Stereo Left", imageL);
         cv::imshow("Stereo Right", imageR);
-        cv::waitKey(17); //~60fps = 17
+        cv::waitKey(1700); //~60fps = 17
 
 //        //write to image file on 1st, 5th, 10th, 15th, 20th frames
 //        if(i == 2)
