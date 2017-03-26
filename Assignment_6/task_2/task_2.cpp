@@ -75,7 +75,33 @@ int main()
     cv::Mat E;
     E = M1.t()*F*M2;
 
-    //normalize E
+    //Find normalized E using SVD
+    cv::Mat w;  //singular values
+    cv::Mat u;
+    cv::Mat vt;
+
+    cv::SVD::compute(E,w,u,vt);
+
+    //make a new w matrix and call it sigma
+    double sigmaVals[9] = {1, 0, 0,
+                           0, 1, 0,
+                           0, 0, 0};
+
+    cv::Mat sigma(3,3, CV_64F, sigmaVals);
+
+    //compute normalized E
+    E = u*sigma*vt;
+
+    //decompose E into Rotation and translation matrix
+    cv::Mat R1;
+    cv::Mat R2;
+    cv::Mat t;
+    cv::decomposeEssentialMat(E,R1,R2,t);
+
+
+
+
+
 
 
 

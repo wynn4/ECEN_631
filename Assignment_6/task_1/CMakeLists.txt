@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8.12)
 project(Assignment6Task1)
-FIND_PACKAGE(OpenCV REQUIRED)
+FIND_PACKAGE(OpenCV 2.4 REQUIRED)
 
 
 add_compile_options(-std=c++0x)

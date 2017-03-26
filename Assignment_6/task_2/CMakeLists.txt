@@ -1,26 +1,18 @@
-cmake_minimum_required(VERSION 2.8.12)
 project(Assignment6Task2)
-FIND_PACKAGE(OpenCV REQUIRED)
+cmake_minimum_required(VERSION 2.8)
+set(CMAKE_CXX_STANDARD 11)
+aux_source_directory(. SRC_LIST)
 
 
-add_compile_options(-std=c++0x)
-SET(CMAKE_INCLUDE_CURRENT_DIR ON)
-SET(CMAKE_AUTOMOC ON)
-SET(CMAKE_AUTOUIC ON)
-
-#include_directories(${BULLET_INCLUDE_DIR}
-#    ${SOIL_INCLUDE_DIRS}
-#    )
+find_package( OpenCV 3 REQUIRED)
 
 
-SET(MYSOURCE
-    task_2.cpp
-    )
+include_directories(${OpenCV_INCLUDE_DIRS})
 
-add_executable(Assignment6Task2 WIN32
-    ${MYSOURCE}
-    )
+set(project_sources
+    task_2.cpp)
 
-target_link_libraries(Assignment6Task2
-    ${OpenCV_LIBS}
-    )
+add_executable(${PROJECT_NAME} ${project_sources})
+
+
+target_link_libraries(Assignment6Task2 ${OpenCV_LIBS} )
