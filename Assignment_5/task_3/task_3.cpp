@@ -12,7 +12,10 @@ int main()
 {
 
     //get the path to the template matching images
-    std::string imagePath = "/home/jesse/Desktop/ECEN_631/Assignment_5/turned_real/TurnReal";
+    std::string imageFolder = "parallel_cube/";
+    std::string imageFile = "ParallelCube";
+
+    std::string imagePath = "/home/jesse/Desktop/ECEN_631/Assignment_5/" + imageFolder + imageFile;
     std::string imageNumber;
     std::string pathEnd = ".jpg";
     std::string fullPath;
@@ -42,7 +45,7 @@ int main()
 
 
     //Look at first image to find features to track
-    firstFrame = cv::imread("/home/jesse/Desktop/ECEN_631/Assignment_5/turned_real/TurnReal10.jpg",1);
+    firstFrame = cv::imread("/home/jesse/Desktop/ECEN_631/Assignment_5/" + imageFolder + imageFile + "10.jpg",1);
     cv::cvtColor(firstFrame,firstFrame,cv::COLOR_BGR2GRAY);
 
     //define a smaller frame within firstFrame for goodFeaturesToTrack to look in
@@ -236,8 +239,8 @@ int main()
     cv::Mat firstImage;
     cv::Mat lastImage;
 
-    firstImage = cv::imread("/home/jesse/Desktop/ECEN_631/Assignment_5/turned_real/TurnReal10.jpg",1);
-    lastImage = cv::imread("/home/jesse/Desktop/ECEN_631/Assignment_5/turned_real/TurnReal15.jpg",1);
+    firstImage = cv::imread("/home/jesse/Desktop/ECEN_631/Assignment_5/" + imageFolder + imageFile + "10.jpg",1);
+    lastImage = cv::imread("/home/jesse/Desktop/ECEN_631/Assignment_5/" + imageFolder + imageFile + "15.jpg",1);
 
     //draw green dot on all of the points that survive from the first frame on the first image
     for(int i=0;i<originalPrevPoints.size();i++)
@@ -266,10 +269,10 @@ int main()
 //    cv::imwrite("/home/jesse/Desktop/ECEN_631/Assignment_5/turned_real_last.jpg",lastImage);
 
 
-    //write points to file
-    cv::FileStorage fs("first_and_last_turned_real.xml", cv::FileStorage::WRITE);
-    fs << "first_points" << originalPrevPoints;
-    fs << "last_points" << lastSurvivingNextPoints;
+//    //write points to file
+//    cv::FileStorage fs("first_and_last_turned_real.xml", cv::FileStorage::WRITE);
+//    fs << "first_points" << originalPrevPoints;
+//    fs << "last_points" << lastSurvivingNextPoints;
 
     cv::destroyAllWindows();
 
