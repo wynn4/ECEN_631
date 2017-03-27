@@ -109,58 +109,58 @@ int main()
     std::cout << R1 << "\n" << R2 << "\n" << t << std::endl;
 
 
-//    //Write R, t_recover, E and F to file
-//    std::string filename = "/home/jesse/Desktop/ECEN_631/Assignment_6/task_2/" + imageFolder + "_data" + ".txt";
-//    std::FILE* file;
-//    file = std::fopen(filename.c_str(),"w");
-//    std::fprintf(file,"Assignment6 Task 2 Structure from Motion Submission File\n");
-//    std::fprintf(file, imageFolder.c_str());
-//    std::fprintf(file, ":\n");
-//    std::fprintf(file,"Rotation Matrix, R:\n\n");
-//    for(int i=0;i<R.rows;i++)
-//    {
-//        for(int j=0;j<R.cols;j++)
-//        {
-//            std::fprintf(file,"%lf ", R.at<double>(i,j));
-//        }
-//        std::fprintf(file,"\n");
-//    }
-//    std::fprintf(file,"\n");
+    //Write R, t_recover, E and F to file
+    std::string filename = "/home/jesse/Desktop/ECEN_631/Assignment_6/task_2/" + imageFolder + "_data" + ".txt";
+    std::FILE* file;
+    file = std::fopen(filename.c_str(),"w");
+    std::fprintf(file,"Assignment6 Task 2 Structure from Motion Submission File\n");
+    std::fprintf(file, imageFolder.c_str());
+    std::fprintf(file, ":\n");
+    std::fprintf(file,"Rotation Matrix, R:\n\n");
+    for(int i=0;i<R.rows;i++)
+    {
+        for(int j=0;j<R.cols;j++)
+        {
+            std::fprintf(file,"%lf ", R.at<double>(i,j));
+        }
+        std::fprintf(file,"\n");
+    }
+    std::fprintf(file,"\n");
 
-//    std::fprintf(file,"Translation Matrix, T:\n\n");
-//    for(int i=0;i<t_recover.rows;i++)
-//    {
-//        for(int j=0;j<t_recover.cols;j++)
-//        {
-//            std::fprintf(file,"%lf ", t_recover.at<double>(i,j));
-//        }
-//        std::fprintf(file,"\n");
-//    }
-//    std::fprintf(file,"\n");
+    std::fprintf(file,"Translation Matrix, T:\n\n");
+    for(int i=0;i<t_recover.rows;i++)
+    {
+        for(int j=0;j<t_recover.cols;j++)
+        {
+            std::fprintf(file,"%lf ", t_recover.at<double>(i,j));
+        }
+        std::fprintf(file,"\n");
+    }
+    std::fprintf(file,"\n");
 
-//    std::fprintf(file,"Essential Matrix, E:\n\n");
-//    for(int i=0;i<E.rows;i++)
-//    {
-//        for(int j=0;j<E.cols;j++)
-//        {
-//            std::fprintf(file,"%lf ", E.at<double>(i,j));
-//        }
-//        std::fprintf(file,"\n");
-//    }
-//    std::fprintf(file,"\n");
+    std::fprintf(file,"Essential Matrix, E:\n\n");
+    for(int i=0;i<E.rows;i++)
+    {
+        for(int j=0;j<E.cols;j++)
+        {
+            std::fprintf(file,"%lf ", E.at<double>(i,j));
+        }
+        std::fprintf(file,"\n");
+    }
+    std::fprintf(file,"\n");
 
-//    std::fprintf(file,"Fundamental Matrix, F:\n\n");
-//    for(int i=0;i<F.rows;i++)
-//    {
-//        for(int j=0;j<F.cols;j++)
-//        {
-//            std::fprintf(file,"%lf ", F.at<double>(i,j));
-//        }
-//        std::fprintf(file,"\n");
-//    }
-//    std::fprintf(file,"\n");
+    std::fprintf(file,"Fundamental Matrix, F:\n\n");
+    for(int i=0;i<F.rows;i++)
+    {
+        for(int j=0;j<F.cols;j++)
+        {
+            std::fprintf(file,"%lf ", F.at<double>(i,j));
+        }
+        std::fprintf(file,"\n");
+    }
+    std::fprintf(file,"\n");
 
-//    std::fclose(file);
+    std::fclose(file);
 
 
 
