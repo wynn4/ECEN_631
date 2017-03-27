@@ -10,8 +10,8 @@
 int main()
 {
     //set which image set are we working with
-    std::string imageFolder = "parallel_cube";  //parallel_cube parallel_real turned_cube turned real
-    std::string imageName = "ParallelCube";     //ParallelCube ParallelReal TurnCube TurnReal
+    std::string imageFolder = "turned_real";  //parallel_cube parallel_real turned_cube turned real
+    std::string imageName = "TurnReal";     //ParallelCube ParallelReal TurnCube TurnReal
 
 
     //Read first and last points from file (from last assignment) and store in vectors
@@ -105,87 +105,64 @@ int main()
     cv::Mat t_recover;
     cv::recoverPose(E,firstPointsUndist,lastPointsUndist, R, t_recover,fx, cv::Point2f(cx,cy));
 
-    std::cout << R << "\n" << t_recover << std::endl;
+    //std::cout << R << "\n" << t_recover << std::endl;
+    std::cout << R1 << "\n" << R2 << "\n" << t << std::endl;
 
 
+    //Write R, t_recover, E and F to file
+    std::string filename = "/home/jesse/Desktop/ECEN_631/Assignment_6/task_2/" + imageFolder + "_data" + ".txt";
+    std::FILE* file;
+    file = std::fopen(filename.c_str(),"w");
+    std::fprintf(file,"Assignment6 Task 2 Structure from Motion Submission File\n");
+    std::fprintf(file, imageFolder.c_str());
+    std::fprintf(file, ":\n");
+    std::fprintf(file,"Rotation Matrix, R:\n\n");
+    for(int i=0;i<R.rows;i++)
+    {
+        for(int j=0;j<R.cols;j++)
+        {
+            std::fprintf(file,"%lf ", R.at<double>(i,j));
+        }
+        std::fprintf(file,"\n");
+    }
+    std::fprintf(file,"\n");
+
+    std::fprintf(file,"Translation Matrix, T:\n\n");
+    for(int i=0;i<t_recover.rows;i++)
+    {
+        for(int j=0;j<t_recover.cols;j++)
+        {
+            std::fprintf(file,"%lf ", t_recover.at<double>(i,j));
+        }
+        std::fprintf(file,"\n");
+    }
+    std::fprintf(file,"\n");
+
+    std::fprintf(file,"Essential Matrix, E:\n\n");
+    for(int i=0;i<E.rows;i++)
+    {
+        for(int j=0;j<E.cols;j++)
+        {
+            std::fprintf(file,"%lf ", E.at<double>(i,j));
+        }
+        std::fprintf(file,"\n");
+    }
+    std::fprintf(file,"\n");
+
+    std::fprintf(file,"Fundamental Matrix, F:\n\n");
+    for(int i=0;i<F.rows;i++)
+    {
+        for(int j=0;j<F.cols;j++)
+        {
+            std::fprintf(file,"%lf ", F.at<double>(i,j));
+        }
+        std::fprintf(file,"\n");
+    }
+    std::fprintf(file,"\n");
+
+    std::fclose(file);
 
 
-
-
-
-
-
-
-
-
-
-
-
-//    //Calculate R1 and R2
-//    cv::Mat R1 = M1.inv()*H1*M1;
-//    cv::Mat R2 = M2.inv()*H2*M2;
-
-//    //get the undistortRectifyMap
-//    cv::Mat map1First;
-//    cv::Mat map2First;
-//    cv::Mat map1Last;
-//    cv::Mat map2Last;
-
-//    cv::initUndistortRectifyMap(M1,dist1,R1,M1,cv::Size(640,480),CV_32FC1,map1First,map2First);
-//    cv::initUndistortRectifyMap(M2,dist2,R2,M2,cv::Size(640,480),CV_32FC1,map1Last,map2Last);
-
-
-//    //load images from file and remap()
-//    cv::Mat firstFrame = cv::imread("/home/jesse/Desktop/ECEN_631/Assignment_5/" + imageFolder + "/" + imageName + "10.jpg", 1);
-//    cv::Mat lastFrame = cv::imread("/home/jesse/Desktop/ECEN_631/Assignment_5/" + imageFolder + "/" + imageName + "15.jpg", 1);
-
-//    cv::remap(firstFrame,firstFrame,map1First,map2First,cv::INTER_NEAREST,cv::BORDER_CONSTANT);
-//    cv::remap(lastFrame,lastFrame,map1Last,map2Last,cv::INTER_NEAREST,cv::BORDER_CONSTANT);
-
-//    //draw some lines to see how well it rectified
-////    //parallel_cube
-////    int topLineY = 53;
-////    int midLineY = 246;
-////    int botLineY = 457;
-
-////    //parallel_real
-////    int topLineY = 63;
-////    int midLineY = 258;
-////    int botLineY = 415;
-
-////    //turned_cube
-////    int topLineY = 63;
-////    int midLineY = 234;
-////    int botLineY = 375;
-
-//    //turned_real
-//    int topLineY = 53;
-//    int midLineY = 246;
-//    int botLineY = 457;
-
-//    cv::line(firstFrame,cv::Point(0,topLineY),cv::Point(640,topLineY),cv::Scalar(0,255,0));
-//    cv::line(firstFrame,cv::Point(0,midLineY),cv::Point(640,midLineY),cv::Scalar(0,255,0));
-//    cv::line(firstFrame,cv::Point(0,botLineY),cv::Point(640,botLineY),cv::Scalar(0,255,0));
-
-//    cv::line(lastFrame,cv::Point(0,topLineY),cv::Point(640,topLineY),cv::Scalar(0,255,0));
-//    cv::line(lastFrame,cv::Point(0,midLineY),cv::Point(640,midLineY),cv::Scalar(0,255,0));
-//    cv::line(lastFrame,cv::Point(0,botLineY),cv::Point(640,botLineY),cv::Scalar(0,255,0));
-
-
-//    //show the rectified images
-//    cv::imshow("First Frame", firstFrame);
-//    cv::imshow("Last Frame", lastFrame);
-//    cv::waitKey(0);
-
-
-//    //write images to file
-//    cv::imwrite("/home/jesse/Desktop/ECEN_631/Assignment_6/task_1/" + imageName + "First.jpg",firstFrame);
-//    cv::imwrite("/home/jesse/Desktop/ECEN_631/Assignment_6/task_1/" + imageName + "Last.jpg",lastFrame);
-
-
-
-
-    cv::destroyAllWindows();
 
     return 0;
 }
