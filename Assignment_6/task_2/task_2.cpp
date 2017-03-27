@@ -96,7 +96,17 @@ int main()
     cv::Mat R1;
     cv::Mat R2;
     cv::Mat t;
+
+    //decomposeEssentialMat returns one of four possible translation and rotation paris
     cv::decomposeEssentialMat(E,R1,R2,t);
+
+    //recover pose figures out the correct rotation and translation for you
+    cv::Mat R;
+    cv::Mat t_recover;
+    cv::recoverPose(E,firstPointsUndist,lastPointsUndist, R, t_recover,fx, cv::Point2f(cx,cy));
+
+    std::cout << R << "\n" << t_recover << std::endl;
+
 
 
 
