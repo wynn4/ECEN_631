@@ -186,34 +186,35 @@ int main()
 //    cv::imshow("last frame", lastFrame);
     cv::waitKey(0);
 
-    //write image to file
-    cv::imwrite("/home/jesse/Desktop/ECEN_631/Assignment_6/task_3/" + imageFolder + ".bmp", firstFrame);
+//    //write image to file
+//    cv::imwrite("/home/jesse/Desktop/ECEN_631/Assignment_6/task_3/" + imageFolder + ".bmp", firstFrame);
 
-    //write translation and scale factor to file
-    std::string filename = "/home/jesse/Desktop/ECEN_631/Assignment_6/task_3/" + imageFolder + "_translation_and_scale_factor" + ".txt";
-    std::FILE* file;
-    file = std::fopen(filename.c_str(),"w");
-    std::fprintf(file,"Assignment6 Task 3 Structure from Motion Submission File\n");
-    std::fprintf(file, "Image Set: ");
-    std::fprintf(file, imageFolder.c_str());
-    std::fprintf(file, "\n\n");
-    std::fprintf(file,"Translation Vector, T:\n\n");
-    for(int i=0;i<T.rows;i++)
-    {
-        for(int j=0;j<T.cols;j++)
-        {
-            std::fprintf(file,"%lf ", T.at<double>(i,j));
-        }
-        std::fprintf(file,"\n");
-    }
-    std::fprintf(file,"\n\n");
+//    //write translation and scale factor to file
+//    std::string filename = "/home/jesse/Desktop/ECEN_631/Assignment_6/task_3/" + imageFolder + "_translation_and_scale_factor" + ".txt";
+//    std::FILE* file;
+//    file = std::fopen(filename.c_str(),"w");
+//    std::fprintf(file,"Assignment6 Task 3 Structure from Motion Submission File\n");
+//    std::fprintf(file, "Image Set: ");
+//    std::fprintf(file, imageFolder.c_str());
+//    std::fprintf(file, "\n\n");
+//    std::fprintf(file,"Translation Vector, T:\n\n");
+//    for(int i=0;i<T.rows;i++)
+//    {
+//        for(int j=0;j<T.cols;j++)
+//        {
+//            std::fprintf(file,"%lf ", T.at<double>(i,j));
+//        }
+//        std::fprintf(file,"\n");
+//    }
+//    std::fprintf(file,"\n\n");
 
-    std::fprintf(file,"Scale Factor:\n");
-    std::fprintf(file, "%lf", scaleFactor);
+//    std::fprintf(file,"Scale Factor:\n");
+//    std::fprintf(file, "%lf", scaleFactor);
 
-    std::fclose(file);
+//    std::fclose(file);
 
 
+    cv::destroyAllWindows();
 
     return 0;
 }
