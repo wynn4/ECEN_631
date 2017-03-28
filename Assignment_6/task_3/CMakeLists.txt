@@ -1,5 +1,6 @@
 project(Assignment6Task3)
 cmake_minimum_required(VERSION 2.8)
+add_compile_options(-std=c++0x)
 set(CMAKE_CXX_STANDARD 11)
 aux_source_directory(. SRC_LIST)
 

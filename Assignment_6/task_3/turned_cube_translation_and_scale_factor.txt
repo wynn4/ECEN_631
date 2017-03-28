@@ -1,0 +1,12 @@
+Assignment6 Task 3 Structure from Motion Submission File
+Image Set: turned_cube
+
+Translation Vector, T:
+
+3.196937 
+0.003877 
+2.592973 
+
+
+Scale Factor:
+4.116300

@@ -11,16 +11,16 @@ int main()
 {
     //set which image set are we working with
     std::string imageFolder = "turned_real";  //parallel_cube parallel_real turned_cube turned real
-    std::string imageName = "TurnReal";     //ParallelCube ParallelReal TurnCube TurnReal
+    std::string imageName = "ParallelReal";     //ParallelCube ParallelReal TurnCube TurnReal
 
 
     //Read first and last points from file (from last assignment) and store in vectors
     std::vector<cv::Point2f> firstPoints;
     std::vector<cv::Point2f> lastPoints;
 
-    cv::FileStorage fs("/home/jesse/Desktop/ECEN_631/Assignment_6/first_and_last_" + imageFolder + ".xml", cv::FileStorage::READ);
-    fs["first_points"] >> firstPoints;
-    fs["last_points"] >> lastPoints;
+    cv::FileStorage fs1("/home/jesse/Desktop/ECEN_631/Assignment_6/first_and_last_" + imageFolder + ".xml", cv::FileStorage::READ);
+    fs1["first_points"] >> firstPoints;
+    fs1["last_points"] >> lastPoints;
 
 
     //Use first and last points to estimate fundamental matrix F
@@ -106,7 +106,7 @@ int main()
     cv::recoverPose(E,firstPointsUndist,lastPointsUndist, R, t_recover,fx, cv::Point2f(cx,cy));
 
     //std::cout << R << "\n" << t_recover << std::endl;
-    std::cout << R1 << "\n" << R2 << "\n" << t << std::endl;
+    //std::cout << R1 << "\n" << R2 << "\n" << t << std::endl;
 
 
 //    //Write R, t_recover, E and F to file
@@ -162,6 +162,11 @@ int main()
 
 //    std::fclose(file);
 
+
+    //write to .xml file
+    cv::FileStorage fs2("/home/jesse/Desktop/ECEN_631/Assignment_6/task_2/rotation_and_translation_" + imageFolder + ".xml", cv::FileStorage::WRITE);
+    fs2 << "rotation" << R;
+    fs2 << "t" << t_recover;
 
 
     return 0;

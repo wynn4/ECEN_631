@@ -1,0 +1,12 @@
+Assignment6 Task 3 Structure from Motion Submission File
+Image Set: parallel_cube
+
+Translation Vector, T:
+
+2.900991 
+0.005618 
+0.285389 
+
+
+Scale Factor:
+2.915000

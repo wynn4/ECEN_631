@@ -1,0 +1,12 @@
+Assignment6 Task 3 Structure from Motion Submission File
+Image Set: turned_real
+
+Translation Vector, T:
+
+0.330211 
+0.452665 
+4.077987 
+
+
+Scale Factor:
+4.116300
