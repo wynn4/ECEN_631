@@ -23,15 +23,28 @@ t = 1:1:17;
 A = [t', ones(17,1)];
 
 b = frames_to_impact;
+b2 = frames_to_impact.*15.25;
 
 x = A\b;
+x2 = A\b2
 
-t_fine = 0:0.1:50;
+t_fine = 1:0.1:50;
 
 line = x(1)*t_fine + x(2); 
+line2 = x2(1)*t_fine + x2(2);
 
-
+figure(1)
 plot(t,frames_to_impact, 'o',t_fine,line)
 axis([0,50,0,50])
+xlabel('Frame Number')
+ylabel('Estimated Frames to Impact')
+title('Task 1 Time to Impact')
+
+figure(2)
+plot(t,frames_to_impact.*15.25, 'o',t_fine,line2)
+axis([0,50,0,800])
+xlabel('Frame Number')
+ylabel('Estimated Distance to Impact (mm)')
+title('Task 2 Time to Impact')
                 
       

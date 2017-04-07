@@ -92,7 +92,7 @@ int main()
 
 
     //loop through and process/display the images
-    for(int i=1;i<numImages + 1;i++)
+    for(int i=2;i<numImages + 1;i++)
     {
         int imageNumber = i;
         std::string imagePath = "/home/jesse/Desktop/ECEN_631/Assignment_7/impact_images/T" + std::to_string(imageNumber) + ".jpg";
@@ -128,6 +128,7 @@ int main()
         {
             aPoint = yPrime[i]/y[i];
             a.push_back(aPoint);
+            //std::cout << aPoint << std::endl;
         }
 
         //find time to impact, tau for each point in each frame
@@ -139,8 +140,10 @@ int main()
         }
 
         //just take the midian value of tau and add it to time to impact vector
-        float timeToImpactFrame = tau[41];
-        timeToImpact.push_back(timeToImpactFrame);
+        float timeToImpactFrame1 = tau[40];
+        float timeToImpactFrame2 = tau[41];
+        float timeToImpactFrame3 = tau[42];
+        timeToImpact.push_back((timeToImpactFrame1 + timeToImpactFrame2 + timeToImpactFrame3)/3);
 
 
 
