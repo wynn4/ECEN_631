@@ -1,6 +1,8 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <sstream>
+#include <iomanip>
 #include <opencv2/opencv.hpp>
 #include <opencv2/video/video.hpp>
 #include <opencv2/highgui/highgui.hpp>
@@ -9,178 +11,138 @@
 
 int main()
 {
-    //define number of images
-    int numImages = 18;
-    int slowMult = 5;
+    int num_images = 702;
 
-    //camera params
-    double fx = 825.0900600547;
-    double fy = 824.2672147458;
-    double cx = 331.6538103208;
-    double cy = 252.9284287373;
+    //mat to hold the gray image
+    cv::Mat grayImage;
+    cv::Mat firstFrame;
+    cv::Mat colorFrame;
 
-    double k1 = -0.2380769337;
-    double k2 = 0.0931325835;
-    double p1 = 0.0003242537;
-    double p2 = -0.0021901930;
-    double k3 = 0.4641735616;
+    //load the sample image to get image size
+    firstFrame = cv::imread("/home/jesse/Desktop/practice_vo_files/VO_Practice_Sequence/000000.png", CV_LOAD_IMAGE_GRAYSCALE);
 
-    double intrinsicParams[9] = {fx, 0, cx,
-                                0, fy, cy,
-                                0, 0, 1};
+    int width = firstFrame.cols;
+    int height = firstFrame.rows;
+    int widthTrim = width*0.1;
+    int heightTrim = height*0.1;
 
-    double distCoeffs[5] = {k1, k2, p1, p2, k3};
 
-    cv::Mat M1(3,3, CV_64F, intrinsicParams);
-    cv::Mat dist1(5,1, CV_64F, distCoeffs);
 
     //__use goodFeaturesToTrack to get set of image points
-    std::vector<cv::Point2f> features;
+    std::vector<cv::Point2f> initialPoints;
 
-    cv::Mat firstFrame;
-    firstFrame = cv::imread("/home/jesse/Desktop/ECEN_631/Assignment_7/impact_images/T1.jpg",1);
-    cv::cvtColor(firstFrame,firstFrame,cv::COLOR_BGR2GRAY);
 
     //mask for goodFeaturesToTrakc
     cv::Mat mask = cv::Mat::zeros(firstFrame.size(), CV_8UC1);
-    //mask around the can
-    cv::Mat roi(mask, cv::Rect(cv::Point(270,150), cv::Point(380,370)));
+    //mask away from the edge a bit
+    cv::Mat roi(mask, cv::Rect(cv::Point(widthTrim,heightTrim), cv::Point(width - widthTrim, height - heightTrim)));
     roi = cv::Scalar(1);
-    //unmask around can middle
-    cv::Mat roi2(mask,cv::Rect(cv::Point(270,220), cv::Point(380,280)));
+    //unmask around the middle
+    cv::Mat roi2(mask,cv::Rect(cv::Point((width/2) - widthTrim, (height/2) - heightTrim), cv::Point((width/2) + widthTrim, (height/2) + heightTrim)));
     roi2 = cv::Scalar(0);
 
     //use goodFeaturesToTrack to find points to track
-    cv::goodFeaturesToTrack(firstFrame,features,100,0.01,10,mask,3,false,0.04);
+    cv::goodFeaturesToTrack(firstFrame,initialPoints,500,0.01,10,mask,3,false,0.04);
 
-    //define Mat to hold previous and next frames
+
+    //file path
+    std::string imgSet = "/home/jesse/Desktop/practice_vo_files/VO_Practice_Sequence/";
+
     cv::Mat prevFrame;
     cv::Mat nextFrame;
 
-    //create vectors to hold prev and next points
     std::vector<cv::Point2f> prevPts;
     std::vector<cv::Point2f> nextPts;
 
-    //vectors to hold optical flow status and err
+    std::vector<cv::Point2f> prevPtsMatched;
+    std::vector<cv::Point2f> nextPtsMatched;
+
+    //Mat to hold fundamental matrix and the output mask
+    cv::Mat F;
+    cv::Mat fMask;
+
+    //ransac tuning params
+    double param1 = 0.5;      //max distance (pixels) from epipolar for non-outlier
+    double param2 = 0.98;   //confidence level that match is correct
+
+    //initialize
+    prevFrame = firstFrame;
+    prevPts = initialPoints;
+
     std::vector<uchar> status;
     std::vector<float> err;
 
-    cv::Mat colorImage;
 
-    prevFrame = firstFrame;
-    prevPts = features;
-
-    std::vector<float> y;
-    std::vector<float> yPrime;
-    std::vector<float> a;
-    std::vector<float> tau;
-    std::vector<float> timeToImpact;
-
-    //populate y vector
-    float yPoint;
-    for(int i=0;i<features.size();i++)
+    //loop through all images in file
+    for(int i=0;i<num_images;i++)
     {
-        if(features[i].y <= 240)
+        std::stringstream ss;
+        ss << imgSet << std::setw(6) << std::setfill('0') << i << ".png";
+        std::string s = ss.str();
+
+        grayImage = cv::imread(s, CV_LOAD_IMAGE_GRAYSCALE);
+
+        if (grayImage.data == NULL)
         {
-           yPoint = 240 - features[i].y;
-           y.push_back(yPoint);
+            std::cout << "Could not open image: " + s << std::endl;
+            return -1;
         }
-        else
-            yPoint = features[i].y - 240;
-            y.push_back(yPoint);
-    }
 
+        nextFrame = grayImage;
 
-    //loop through and process/display the images
-    for(int i=2;i<numImages + 1;i++)
-    {
-        int imageNumber = i;
-        std::string imagePath = "/home/jesse/Desktop/ECEN_631/Assignment_7/impact_images/T" + std::to_string(imageNumber) + ".jpg";
-
-        //read in the image
-        cv::Mat image = cv::imread(imagePath);
-
-        //convert to gray
-        cv::cvtColor(image, image, cv::COLOR_BGR2GRAY);
-
-        nextFrame = image;
+        //got the image, now lets process...
 
         //calcultate optical flow
         cv::calcOpticalFlowPyrLK(prevFrame,nextFrame,prevPts,nextPts,status, err);
 
-        //find y prime for each point in each frame
-        float yPrimePoint;
-        for(int i=0;i<nextPts.size();i++)
+
+        //get a filter mask (fmask) to eliminate outliers using cv::findFundamentalMat()
+        F = cv::findFundamentalMat(prevPts,nextPts,fMask,CV_FM_RANSAC,param1,param2);
+
+        //go through the mask and where there's a '1', keep the point, where '0' toss it
+        for(int i=0;i<fMask.size().height;i++)
         {
-            if(nextPts[i].y <= 240)
+            if(fMask.at<bool>(0,i) == 1)
             {
-                yPrimePoint = 240 - nextPts[i].y;
-                yPrime.push_back(yPrimePoint);
+                nextPtsMatched.push_back(nextPts[i]);
+                prevPtsMatched.push_back(prevPts[i]);
+
             }
-            else
-                yPrimePoint = nextPts[i].y - 240;
-                yPrime.push_back(yPrimePoint);
         }
 
-        //find expansion rate, 'a' for each point in each frame
-        float aPoint;
-        for(int i=0;i<y.size();i++)
-        {
-            aPoint = yPrime[i]/y[i];
-            a.push_back(aPoint);
-            //std::cout << aPoint << std::endl;
-        }
 
-        //find time to impact, tau for each point in each frame
-        float tauPoint;
-        for(int i=0;i<a.size();i++)
-        {
-            tauPoint = a[i]/(a[i] - 1);
-            tau.push_back(tauPoint);
-        }
-
-        //just take the midian value of tau and add it to time to impact vector
-        float timeToImpactFrame1 = tau[40];
-        float timeToImpactFrame2 = tau[41];
-        float timeToImpactFrame3 = tau[42];
-        timeToImpact.push_back((timeToImpactFrame1 + timeToImpactFrame2 + timeToImpactFrame3)/3);
-
-
-
-
-        //draw the feature points
         //convert back to color to display
-        cv::cvtColor(image,colorImage,cv::COLOR_GRAY2BGR);
+        cv::cvtColor(grayImage,colorFrame,cv::COLOR_GRAY2BGR);
 
-        //draw green dot on all of the feature points
-        for(int i=0;i<features.size();i++)
+        //draw green dot on all the original corner points
+        for(int i=0;i<nextPtsMatched.size();i++)
         {
-           cv::circle(colorImage,cv::Point(nextPts[i].x,nextPts[i].y),1,cv::Scalar(0,255,0),2,8,0);
+           cv::circle(colorFrame,cv::Point(prevPtsMatched[i].x,prevPtsMatched[i].y),1,cv::Scalar(0,255,0),2,8,0);
+        }
+
+        //draw red line between the current and previous points
+        for(int i=0;i<nextPtsMatched.size();i++)
+        {
+            cv::line(colorFrame,cv::Point(prevPtsMatched[i].x,prevPtsMatched[i].y),cv::Point(nextPtsMatched[i].x,nextPtsMatched[i].y),cv::Scalar(0,0,255),2,8,0);
         }
 
 
-        //display the image
-        cv::imshow("Frame", colorImage);
-        cv::waitKey(33 * slowMult);
+        cv::imshow("image", colorFrame);
+        cv::waitKey(1);
 
-        //reset and clear out the vectors
-        prevPts = nextPts;
-        prevFrame = image;
-        y.clear();
-        y = yPrime;
 
-        yPrime.clear();
-        a.clear();
-        tau.clear();
+
+
+        //reset frame and clear out the vectors
+        prevFrame = grayImage;
+        prevPts.clear();
+        nextPtsMatched.clear();
+        prevPtsMatched.clear();
+
+        //prevPoints = findgoodfeaturs to track
+        cv::goodFeaturesToTrack(prevFrame,prevPts,500,0.01,10,mask,3,false,0.04);
 
     }
-
-
-    for(int i=0;i<timeToImpact.size();i++)
-    {
-        std::cout << timeToImpact[i] << std::endl;
-    }
-
     cv::destroyAllWindows();
 
     return 0;
