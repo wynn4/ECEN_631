@@ -12,26 +12,34 @@
 int main()
 {
     std::FILE* file;
-    std::string filename = "/home/jesse/Desktop/practice_vo_files/my_vo_data_practice.txt";
-    //std::string filename = "/home/jesse/Desktop/practice_vo_files/my_vo_data_hall.txt";
+    //std::string filename = "/home/jesse/Desktop/practice_vo_files/my_vo_data_practice.txt";
+    std::string filename = "/home/jesse/Desktop/practice_vo_files/my_vo_data_hall.txt";
     file = std::fopen(filename.c_str(),"w");
 
-    int num_images = 702; //702
+    int num_images = 2240; //702 practice 2240 hall
 
-    //camera params
-    double fx = 707.09120;
-    double fy = 707.09120;
-    double ox = 601.88730;
-    double oy = 183.11040;
+//    // practice camera params
+//    double fx = 707.09120;
+//    double fy = 707.09120;
+//    double ox = 601.88730;
+//    double oy = 183.11040;
+
+//    double intrinsicParams[9] = {fx, 0, ox,
+//                                0, fy, oy,
+//                                0, 0, 1};
+//    cv::Mat M(3,3, CV_64F, intrinsicParams);
+
+    // hall camera params
+    double fx = 677.41251774486568;
+    double fy = 680.73800850564749;
+    double ox = 323.12557438767283;
+    double oy = 224.77413395670021;
 
     double intrinsicParams[9] = {fx, 0, ox,
                                 0, fy, oy,
                                 0, 0, 1};
-
-//    double distCoeffs[5] = {k1, k2, p1, p2, k3};
-
     cv::Mat M(3,3, CV_64F, intrinsicParams);
-//    cv::Mat dist1(5,1, CV_64F, distCoeffs);
+
 
     //mat to hold the gray image
     cv::Mat grayImage;
@@ -39,7 +47,8 @@ int main()
     cv::Mat colorFrame;
 
     //load the sample image to get image size
-    firstFrame = cv::imread("/home/jesse/Desktop/practice_vo_files/VO_Practice_Sequence/000000.png", CV_LOAD_IMAGE_GRAYSCALE);
+    //firstFrame = cv::imread("/home/jesse/Desktop/practice_vo_files/VO_Practice_Sequence/000000.png", CV_LOAD_IMAGE_GRAYSCALE);
+    firstFrame = cv::imread("/home/jesse/Desktop/practice_vo_files/BYU_Hallway_Sequence/000000.png", CV_LOAD_IMAGE_GRAYSCALE);
 
     int width = firstFrame.cols;
     int height = firstFrame.rows;
@@ -66,8 +75,8 @@ int main()
 
 
     //file path
-    std::string imgSet = "/home/jesse/Desktop/practice_vo_files/VO_Practice_Sequence/";
     //std::string imgSet = "/home/jesse/Desktop/practice_vo_files/VO_Practice_Sequence/";
+    std::string imgSet = "/home/jesse/Desktop/practice_vo_files/BYU_Hallway_Sequence/";
 
 
     cv::Mat prevFrame;
@@ -148,8 +157,8 @@ int main()
         //_got the good points, now lets figure out how the camera moved
 
         //_undistort
-        cv::undistortPoints(nextPtsMatched,nextMatchedUndist, M, cv::noArray(), cv::noArray());
-        cv::undistortPoints(prevPtsMatched,prevMatchedUndist, M, cv::noArray(), cv::noArray());
+        cv::undistortPoints(nextPtsMatched,nextMatchedUndist, M, cv::noArray(), cv::noArray(),M);
+        cv::undistortPoints(prevPtsMatched,prevMatchedUndist, M, cv::noArray(), cv::noArray(),M);
 
         //convert points back to image frame (pixels)
         for(int i=0;i<nextMatchedUndist.size();i++)
@@ -167,24 +176,24 @@ int main()
         cv::Mat E;
         E = M.t()*F*M;
 
-//        //Find normalized E using SVD
-//        cv::Mat w;  //singular values
-//        cv::Mat u;
-//        cv::Mat vt;
+        //Find normalized E using SVD
+        cv::Mat w;  //singular values
+        cv::Mat u;
+        cv::Mat vt;
 
-//        cv::SVD::compute(E,w,u,vt);
+        cv::SVD::compute(E,w,u,vt);
 
-//        //make a new w matrix and call it sigma
-//        double sigmaVals[9] = {1, 0, 0,
-//                               0, 1, 0,
-//                               0, 0, 0};
+        //make a new w matrix and call it sigma
+        double sigmaVals[9] = {1, 0, 0,
+                               0, 1, 0,
+                               0, 0, 0};
 
-//        cv::Mat sigma(3,3, CV_64F, sigmaVals);
+        cv::Mat sigma(3,3, CV_64F, sigmaVals);
 
-//        std::cout << sigma << std::endl;
+        std::cout << sigma << std::endl;
 
-//        //compute normalized E
-//        E = u*sigma*vt;
+        //compute normalized E
+        E = u*sigma*vt;
 
         //recover pose
         cv::Mat R;
