@@ -11,6 +11,7 @@
 
 int main()
 {
+    double scale_factor = 0.8;
     std::FILE* file;
     //std::string filename = "/home/jesse/Desktop/practice_vo_files/my_vo_data_practice.txt";
     std::string filename = "/home/jesse/Desktop/practice_vo_files/my_vo_data_hall.txt";
@@ -170,7 +171,6 @@ int main()
             prevMatchedUndist[i].y = prevMatchedUndist[i].y * fy + oy;
         }
 
-        //F_new = cv::findFundamentalMat(prevMatchedUndist,nextMatchedUndist,cv::noArray(),CV_FM_RANSAC);
 
         //calculate essential matrix E from F (using equation on slide 28 of 3D Reconstruction lecture slides)
         cv::Mat E;
@@ -190,7 +190,7 @@ int main()
 
         cv::Mat sigma(3,3, CV_64F, sigmaVals);
 
-        std::cout << sigma << std::endl;
+        //std::cout << sigma << std::endl;
 
         //compute normalized E
         E = u*sigma*vt;
@@ -204,6 +204,7 @@ int main()
         {
             std::cout << "true" << std::endl;
             t_recover = -1*t_recover;
+            t_recover = scale_factor*t_recover;  //add in the scale factor
         }
         else
             std::cout << "false" << std::endl;
@@ -269,6 +270,7 @@ int main()
         //prevPoints = findgoodfeaturs to track
         cv::goodFeaturesToTrack(prevFrame,prevPts,500,0.01,10,mask,3,false,0.04);
         count++;
+        //i = i+1;
     }
     cv::destroyAllWindows();
     std::fclose(file);
