@@ -13,6 +13,21 @@ int main()
 {
     int num_images = 702;
 
+    //camera params
+    double fx = 707.09120;
+    double fy = 707.09120;
+    double ox = 601.88730;
+    double oy = 183.11040;
+
+    double intrinsicParams[9] = {fx, 0, ox,
+                                0, fy, oy,
+                                0, 0, 1};
+
+//    double distCoeffs[5] = {k1, k2, p1, p2, k3};
+
+    cv::Mat M(3,3, CV_64F, intrinsicParams);
+//    cv::Mat dist1(5,1, CV_64F, distCoeffs);
+
     //mat to hold the gray image
     cv::Mat grayImage;
     cv::Mat firstFrame;
@@ -109,6 +124,8 @@ int main()
 
             }
         }
+
+        //got the good points, now lets figure out how the camera moved
 
 
         //convert back to color to display

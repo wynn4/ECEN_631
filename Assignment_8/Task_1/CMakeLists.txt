@@ -1,26 +1,19 @@
-cmake_minimum_required(VERSION 2.8.12)
 project(Assignment8Task1)
-FIND_PACKAGE(OpenCV 2.4 REQUIRED)
-
-
+cmake_minimum_required(VERSION 2.8)
 add_compile_options(-std=c++0x)
-SET(CMAKE_INCLUDE_CURRENT_DIR ON)
-SET(CMAKE_AUTOMOC ON)
-SET(CMAKE_AUTOUIC ON)
-
-#include_directories(${BULLET_INCLUDE_DIR}
-#    ${SOIL_INCLUDE_DIRS}
-#    )
+set(CMAKE_CXX_STANDARD 11)
+aux_source_directory(. SRC_LIST)
 
 
-SET(MYSOURCE
-    task_1.cpp
-    )
+find_package(OpenCV 3 REQUIRED)
 
-add_executable(Assignment8Task1 WIN32
-    ${MYSOURCE}
-    )
 
-target_link_libraries(Assignment8Task1
-    ${OpenCV_LIBS}
-    )
+include_directories(${OpenCV_INCLUDE_DIRS})
+
+set(project_sources
+    task_1.cpp)
+
+add_executable(${PROJECT_NAME} ${project_sources})
+
+
+target_link_libraries(Assignment8Task1 ${OpenCV_LIBS} )
